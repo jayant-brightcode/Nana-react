@@ -1,0 +1,305 @@
+import React, { useState } from "react";
+import { Image, StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, TouchableWithoutFeedback, ScrollView, ActivityIndicator, StatusBar } from "react-native";
+import Colors from "../Utils/Color";
+import { useNavigation } from '@react-navigation/native'; // Import navigation functions
+import Toast from 'react-native-toast-message'; // Make sure to import react-native-toast-message
+import DateTimePicker from '@react-native-community/datetimepicker'
+
+import Picker from '@ouroboros/react-native-picker';
+import { getToken } from "../Utils/LocalStorage.js";
+import { Remote } from "../Utils/Remote.js";
+const languages = [
+    { id: 1, name: 'I am a Employee (Job Seekers)' },
+    { id: 2, name: 'I am a Employer' },
+    { id: 3, name: 'Both' },
+
+    // Add more languages as needed
+];
+
+
+
+const ChooseEmployeeTypeScreen = () => {
+
+    const navigation = useNavigation()
+
+    const [selectedItem, setSelectedItem] = useState(languages[0]);
+    const [show_extra, set_show_extra] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+    const [c_type, set_c_type] = useState('');
+
+
+
+
+
+
+
+
+    const handleItemPress = (item) => {
+        setSelectedItem(item);
+        Toast.show({
+            type: 'success',
+            text1: `Selected Category: ${item.name}`,
+        });
+
+        if (item.id == 1) {
+            set_c_type("employee")
+            const type = {
+                customer_type: "employee"
+            }
+
+            navigation.navigate("RegistrationFormScreen", { detail: type })
+
+        
+        }
+        if (item.id == 2) {
+            set_c_type("employer")
+            const type = {
+                customer_type: "employer"
+            }
+
+            navigation.navigate("RegistrationFormScreen", { detail: type })
+        }
+
+        if (item.id == 3) {
+            set_c_type("both")
+            const type = {
+                customer_type: "both"
+            }
+
+            navigation.navigate("RegistrationFormScreen", { detail: type })
+        }
+
+      
+     
+
+
+    };
+
+    const [job_pref, set_job_prefs] = useState([]);
+  
+  
+
+
+
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.content}>
+                <Text style={styles.text}>Choose the {'\n'}Category</Text>
+                <View style={styles.imageContainer}>
+                    <Image source={require('../../assets/images/otp.png')} style={{ width: 100, height: 80 }} />
+                </View>
+            </View>
+
+            <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 15, marginTop: 20, marginStart: 20 }}>Select the category to get started</Text>
+
+            {loading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            )}
+
+            <View>
+
+
+                 <FlatList style={{ marginTop: 10, marginBottom: 20 }}
+                    data={languages}
+
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            style={[
+                                styles.itemContainer,
+                                selectedItem === item && styles.selectedItem, // Apply selected style
+                                { flexDirection: 'row', justifyContent: 'space-between' }
+                            ]}
+                            onPress={() => handleItemPress(item)}
+                        >
+                            <Text style={[{ fontSize: 18 }, { color: selectedItem === item ? Colors.dark_gray : Colors.textcolor }, { fontWeight: selectedItem === item ? 'bold' : 'medium' }]}>{item.name}</Text>
+                            <Image
+                                source={selectedItem === item ? require('../../assets/images/green_right.png') : require('../../assets/images/blue_right.png')}
+                                style={{ width: 20, height: 20 }}
+                            />
+
+                        </TouchableOpacity>
+
+                    )}
+                /> 
+            </View>
+
+
+         
+
+
+        </View>
+    );
+
+
+
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'white', // Set your desired background color
+    },
+    rowstyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    content: {
+
+
+        backgroundColor: Colors.orange,
+    },
+    selectedItem: {
+        backgroundColor: Colors.white, // Highlight the selected item
+    },
+    itemContainer: {
+        flex: 1,
+        margin: 10,
+        padding: 10,
+        borderColor: Colors.dark_gray,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        height: '12%', // Adjust the height of each item
+    },
+    languageName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    input: {
+        width: '100%',
+        height: 45,
+        backgroundColor: Colors.gray,
+        borderRadius: 8,
+        marginBottom: 10,
+        padding: 10,
+
+
+    },
+    rowinput: {
+        width: 150,
+        height: 45,
+        backgroundColor: Colors.gray,
+        borderRadius: 8,
+        marginBottom: 10,
+        padding: 10,
+
+
+    },
+    genderDropdown: {
+
+        borderColor: Colors.gray,
+        borderRadius: 8,
+
+
+    },
+    dropdownOptions: {
+        position: 'absolute',
+        top: 70,
+        backgroundColor: 'white',
+        elevation: 5,
+        borderWidth: 1,
+        borderColor: Colors.gray,
+        borderRadius: 8,
+    },
+    dropdownOption: {
+        padding: 10,
+        borderBottomWidth: 1,
+        width: 150,
+        borderColor: Colors.gray,
+    },
+    dropdownText: {
+        color: Colors.textcolor,
+    },
+    button: {
+
+
+
+        width: '100%',
+        bottom: 30,
+        marginTop: 30,
+
+        height: '10%', // Set the desired height here
+        backgroundColor: Colors.blue,
+        alignItems: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 20,
+
+        width: "100%"
+
+    },
+    content: {
+        flexDirection: 'row',
+        alignItems: 'center', // Center the text vertically
+        backgroundColor: Colors.orange,
+    },
+    text: {
+        color: Colors.white,
+        fontSize: 23,
+        fontWeight: 'bold',
+        marginStart: 30,
+    },
+    imageContainer: {
+        marginTop: 20,
+        flex: 1,
+        height: '40%',
+        marginEnd: 10,
+        alignItems: 'flex-end', // Align the image to the right
+    },
+
+  
+ 
+    icon: {
+        width: 40,
+        height: 40,
+        // Change the icon color
+    },
+   
+});
+
+export default ChooseEmployeeTypeScreen
+
+
+function isValidPhone(value) {
+    const phonePattern = /^\d{10}$/; // Assumes a 10-digit phone number
+    return phonePattern.test(value)
+}
