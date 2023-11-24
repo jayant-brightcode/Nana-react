@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from "react";
-import { Image, StyleSheet, Text, View, TouchableOpacity, TextInput, TouchableWithoutFeedback, ScrollView,ActivityIndicator ,StatusBar} from "react-native";
+import React, { useState, useEffect } from "react";
+import { Image, StyleSheet, Text, View, TouchableOpacity, TextInput, TouchableWithoutFeedback, ScrollView, ActivityIndicator, StatusBar,Modal,FlatList } from "react-native";
 import Colors from "../Utils/Color";
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
 import Toast from 'react-native-toast-message'; // Make sure to import react-native-toast-message
@@ -18,13 +18,13 @@ const languages = [
 ];
 
 const genders = [{
-  text:'Male',value:'Male'
-},{
-  text:'Female',
-  value:'Female'
-},{
-  text:'Other',
-  value:'Other'
+  text: 'Male', value: 'Male'
+}, {
+  text: 'Female',
+  value: 'Female'
+}, {
+  text: 'Other',
+  value: 'Other'
 }];
 
 
@@ -32,8 +32,8 @@ const RegistrationFormScreen = () => {
 
   const navigation = useNavigation()
   const route = useRoute();
-   const { page } = route.params
- 
+  const { page } = route.params
+
   const [selectedItem, setSelectedItem] = useState(languages[0]);
   const [show_extra, set_show_extra] = useState(false);
 
@@ -44,76 +44,81 @@ const RegistrationFormScreen = () => {
 
   useEffect(() => {
     getProfile();
-}, []);
+  }, []);
 
-const getProfile = async () => {
+
+
+  const getProfile = async () => {
 
 
     try {
-        setLoading(true)
-        const token = await getToken(); // Replace with your actual Bearer token
-        let apiUrl = Remote.BASE_URL + "user/get_profile"
+      setLoading(true)
+      const token = await getToken(); // Replace with your actual Bearer token
+      let apiUrl = Remote.BASE_URL + "user/get_profile"
 
 
 
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                Authorization: `${token}`,
-                'Content-Type': 'application/json', // Adjust content type as needed
-            },
-        });
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          Authorization: `${token}`,
+          'Content-Type': 'application/json', // Adjust content type as needed
+        },
+      });
 
 
 
-        if (response.ok) {
-            const data = await response.json();
-
-     
-
-
-            set_profile(data.profile_details)
-            set_c_type(data.profile_details.customer_type)
-            setName(data.profile_details.name)
-            gender_setPicker(data.profile_details.gender)
-            setChosenDate(new Date(data.profile_details.dob))
-            set_alternate_phone(data.profile_details.alternate_phone)
-            set_present_address(data.profile_details.present_address)
-            set_permanent_address(data.profile_details.permanent_address)
-            if(data.profile_details.average_price!=null){
-              set_avg_amount(data.profile_details.average_price.toString())
-            }
-
-            if(data.profile_details.job_pref!=null){
-              console.log(data.profile_details.job_pref._id)
-              setPicker(data.profile_details.job_pref._id)
-            }
-       
-      
-            
-            
-
-            setLoading(false)
+      if (response.ok) {
+        const data = await response.json();
 
 
 
 
+        set_profile(data.profile_details)
+        set_c_type(data.profile_details.customer_type)
+        setName(data.profile_details.name)
+        if (data.profile_details.gender != null) {
+          gender_setPicker(data.profile_details.gender)
 
-
-        } else {
-            console.error('Error:', response.status, response.statusText);
-            setLoading(false)
         }
-    } catch (error) {
-        console.error('Fetch error:', error);
+        setChosenDate(new Date(data.profile_details.dob))
+        set_alternate_phone(data.profile_details.alternate_phone)
+        set_present_address(data.profile_details.present_address)
+        set_permanent_address(data.profile_details.permanent_address)
+        if (data.profile_details.average_price != null) {
+          set_avg_amount(data.profile_details.average_price.toString())
+        }
+
+        if (data.profile_details.job_pref != null) {
+          console.log(data.profile_details.job_pref._id)
+          setPicker(data.profile_details.job_pref._id)
+        }
+
+
+
+
+
         setLoading(false)
+
+
+
+
+
+
+      } else {
+        console.error('Error:', response.status, response.statusText);
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setLoading(false)
     }
 
 
 
 
 
-};
+  };
 
 
 
@@ -126,29 +131,29 @@ const getProfile = async () => {
       text1: `Selected Category: ${item.name}`,
     });
 
-    if(item.id==1){
+    if (item.id == 1) {
       set_c_type("employee")
     }
-    if(item.id==2){
+    if (item.id == 2) {
       set_c_type("employer")
     }
 
-    if(item.id==3){
+    if (item.id == 3) {
       set_c_type("both")
     }
 
-    if(item.id==1 || item.id==3){
+    if (item.id == 1 || item.id == 3) {
       set_show_extra(true)
-      
 
-      
 
-    }else{
+
+
+    } else {
       set_show_extra(false)
 
     }
 
-    
+
 
 
   };
@@ -158,7 +163,7 @@ const getProfile = async () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [job_pref, set_job_prefs] = useState([]);
   let [picker, setPicker] = useState();
-  let [gender_picker, gender_setPicker] = useState('Male');
+  let [gender_picker, gender_setPicker] = useState("Male");
 
 
   const [name, setName] = useState('');
@@ -168,20 +173,92 @@ const getProfile = async () => {
   const [present_address, set_present_address] = useState('');
   const [c_type, set_c_type] = useState(profile.customer_type);
   const [avg_amount, set_avg_amount] = useState('');
+  const [aadhar_number, set_aadhar_number] = useState('');
+  const [education, set_education] = useState('');
+
+  const [state, set_state] = useState('');
+  const [district, set_district] = useState('');
+  const [city, set_city] = useState('');
+  const [selected_state_id, set_selected_state_id] = useState('');
+  const [selected_district_id, set_selected_district_id] = useState('');
+  const [state_list, set_state_list] = useState([]);
+  const [distrcit_list, set_distrcit_list] = useState([]);
+  const [isDialogVisible, setDialogVisible] = useState(false);
+
+  const [isDialogVisible2, setDialogVisible2] = useState(false);
+  const [selected_state_id_for_district, set_selected_state_id_for_district] = useState('');
 
 
   useEffect(() => {
-    getJobPreference();
+    get_state();
   }, []);
 
 
-  console.log(c_type)
 
 
+  const openDialog = () => {
+
+    setDialogVisible(true);
+  };
+
+  const closeDialog = () => {
+    setDialogVisible(false);
+  };
+
+
+  const openDialog1 = () => {
+
+    if(selected_state_id_for_district==''){
+
+      Toast.show({
+        type: 'success',
+        text1: `please choose state`,
+      });
+      return;
+    }
+
+    setDialogVisible2(true);
+  };
+
+  const closeDialog1 = () => {
+    setDialogVisible2(false);
+  };
+
+
+  const select_state = (item) => {
+
+
+    set_selected_state_id(item._id)
+    set_selected_state_id_for_district(item.id)
+    set_state(item.name)
+    closeDialog()
+    get_district(item.id)
+      
+  
+    Toast.show({
+      type: 'success',
+      text1: `Selected Category: ${item.name}`,
+    });
+
+
+  };
+
+  const select_district = (item) => {
+
+
+    set_selected_district_id(item._id)
+    set_district(item.name)
+    closeDialog1()
  
 
 
+    Toast.show({
+      type: 'success',
+      text1: `Selected Category: ${item.name}`,
+    });
 
+
+  };
 
   const onDateChange = (event, selectedDate) => {
     if (event.type === 'set') {
@@ -197,14 +274,14 @@ const getProfile = async () => {
   };
 
 
-  const getJobPreference = async () => {
+  const get_state = async () => {
 
 
     try {
 
       const token = await getToken(); // Replace with your actual Bearer token
 
-      const response = await fetch(Remote.BASE_URL + "get_job_preference", {
+      const response = await fetch(Remote.BASE_URL + "get_state", {
         method: 'GET',
         headers: {
           Authorization: `${token}`,
@@ -212,29 +289,19 @@ const getProfile = async () => {
         },
       });
 
-   
 
-       if (response.ok) {
+
+      if (response.ok) {
         const data = await response.json();
-      
 
-         job_pref.length = 0;
 
-         for (let index = 0; index < data.job_preferences.length; index++) {
-            const job_ui = {
-              text: data.job_preferences[index].name,
-              value: data.job_preferences[index]._id
-            }
-            
-            job_pref.push(job_ui)
+        set_state_list(data.states)
 
-        
-          
-         }
 
-      
-      
-      
+
+
+
+
 
 
 
@@ -243,11 +310,80 @@ const getProfile = async () => {
 
       } else {
         console.error('Error:', response.status, response.statusText);
-  
+
       }
     } catch (error) {
       console.error('Fetch error:', error);
- 
+
+    }
+
+
+
+
+
+  };
+
+  const get_district = async (id) => {
+
+
+    try {
+
+       if(selected_state_id_for_district == ''){
+
+         Toast.show({
+           type: 'success',
+           text1: `Please choose state`,
+         });
+          return;
+       }
+
+      let apiUrl = Remote.BASE_URL + "get_district"
+      const token = await getToken(); // Replace with your actual Bearer token
+
+      const queryParams = {
+        parent_id: id,
+
+      };
+
+
+
+      // Construct the URL with query parameters
+      const urlWithParams = `${apiUrl}?${new URLSearchParams(queryParams)}`;
+
+      const response = await fetch(urlWithParams, {
+        method: 'GET',
+        headers: {
+          Authorization: `${token}`,
+          'Content-Type': 'application/json', // Adjust content type as needed
+        },
+      });
+
+
+
+      if (response.ok) {
+        const data = await response.json();
+
+
+        set_distrcit_list(data.districts)
+
+
+
+
+
+
+
+
+
+
+
+
+      } else {
+        console.error('Error:', response.status, response.statusText);
+
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+
     }
 
 
@@ -299,29 +435,53 @@ const getProfile = async () => {
       return;
     }
 
-    if (c_type=="both" || c_type=="employee") {
+    if (!aadhar_number.toString().trim()) {
+      Toast.show({
+        type: 'success',
+        text1: `Please enter aadhar number`,
+      });
+      return;
+    }
 
-     
-
-      if(picker=='' || picker==null){
-        Toast.show({
-          type: 'success',
-          text1: `Please choose job preference`,
-        });
-        return;
-      }
-
-      if (avg_amount=='') {
-        Toast.show({
-          type: 'success',
-          text1: `Please enter avg amount`,
-        });
-        return;
-      }
-   
+    if (!education.trim()) {
+      Toast.show({
+        type: 'success',
+        text1: `Please enter your education`,
+      });
+      return;
     }
 
  
+
+    if (selected_state_id=='') {
+      Toast.show({
+        type: 'success',
+        text1: `Please choose your state`,
+      });
+      return;
+    }
+
+    if (selected_district_id == '') {
+      Toast.show({
+        type: 'success',
+        text1: `Please choose your district`,
+      });
+      return;
+    }
+
+
+    if (!city.trim()) {
+      Toast.show({
+        type: 'success',
+        text1: `Please enter your city`,
+      });
+      return;
+    }
+
+
+    
+
+
 
     try {
 
@@ -333,11 +493,14 @@ const getProfile = async () => {
         gender: gender_picker,
         alternate_phone: alternate_phone,
         dob: chosenDate,
-        customer_type:c_type,
-        permanent_address:permanent_address,
-        present_address:present_address,
-        job_pref_id:c_type=="employer" ? null : picker,
-        avarage_price:c_type=="employer" ? null : avg_amount
+        permanent_address: permanent_address,
+        present_address: present_address,
+        aadhar_number:aadhar_number,
+        education:education,
+        state_id:selected_state_id,
+        district_id:selected_district_id,
+        city:city
+       
       };
 
       const token = await getToken()
@@ -345,7 +508,7 @@ const getProfile = async () => {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-           Authorization: `${token}`,
+          Authorization: `${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
@@ -364,13 +527,13 @@ const getProfile = async () => {
         setLoading(false)
 
 
-        if(page.screen=="profile"){
+        if (page.screen == "profile") {
           navigation.navigate("ProfileScreen")
-        }else{
+        } else {
           navigation.navigate("ChoosePlanScreen")
         }
-    
-      
+
+
 
 
       } else {
@@ -394,7 +557,7 @@ const getProfile = async () => {
 
 
 
- 
+
 
 
 
@@ -416,9 +579,9 @@ const getProfile = async () => {
 
       <View style={styles.content}>
 
-        <Text style={{ fontSize: 23, color: Colors.white, fontWeight: "bold", marginStart: 10, marginTop: 10,marginBottom:20 }}>Update Profile</Text>
+        <Text style={{ fontSize: 23, color: Colors.white, fontWeight: "bold", marginStart: 10, marginTop: 10, marginBottom: 20 }}>Update Profile</Text>
 
-      
+
       </View>
 
       <ScrollView>
@@ -430,7 +593,7 @@ const getProfile = async () => {
         )}
 
 
-        <View style={{ padding: 20,}}>
+        <View style={{ padding: 20, }}>
           <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 }}>Your Name here</Text>
 
           <TextInput style={styles.input} placeholder="Full Name" value={name} onChangeText={(text) => setName(text)} />
@@ -458,23 +621,23 @@ const getProfile = async () => {
             </View> */}
           <View style={styles.rowstyle}>
             <View>
-              <Text style={{fontSize:12}}>Gender</Text>
+              <Text style={{ fontSize: 12 }}>Gender</Text>
               <Picker
                 onChanged={gender_setPicker}
                 options={genders}
-                style={{marginTop:8,height:40,backgroundColor:Colors.grayview,borderRadius:10,paddingStart:10,paddingEnd:10,color:Colors.textcolor}}
+                style={{ marginTop: 8, height: 40, backgroundColor: Colors.grayview, borderRadius: 10, paddingStart: 10, paddingEnd: 10, color: Colors.textcolor }}
                 value={gender_picker}
 
               />
-             
+
             </View>
 
 
 
             <View>
-              <Text style={{fontSize:12}}>Date of Birth</Text>
+              <Text style={{ fontSize: 12 }}>Date of Birth</Text>
               <TouchableWithoutFeedback onPress={openDatePicker}>
-                <Text style={{marginTop:8,height:40,backgroundColor:Colors.grayview,padding:10,color:Colors.textcolor}}>{chosenDate.toDateString()}</Text>
+                <Text style={{ marginTop: 8, height: 40, backgroundColor: Colors.grayview, padding: 10, color: Colors.textcolor }}>{chosenDate.toDateString()}</Text>
               </TouchableWithoutFeedback>
               {showDatePicker && (
                 <DateTimePicker
@@ -491,27 +654,62 @@ const getProfile = async () => {
 
           </View>
 
-         
 
-          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 ,marginTop:10}}>Alternate Mobile Number</Text>
+
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>Alternate Mobile Number</Text>
 
           <TextInput style={styles.input} placeholder="Enter Alternate mobile number here" keyboardType="number-pad" value={alternate_phone} onChangeText={(text) => set_alternate_phone(text)} />
 
 
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>Aadhar Number</Text>
+
+          <TextInput style={styles.input} placeholder="Enter your Aadhar number here" keyboardType="number-pad" value={aadhar_number} onChangeText={(text) => set_aadhar_number(text)} />
+
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>Enter your Education</Text>
+
+          <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top' }} keyboardAppearance="default" placeholder="Enter your Education details here" multiline={true} value={education} onChangeText={(text) => set_education(text)} />
+
+         
+
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>State</Text>
+
+           <TouchableOpacity onPress={()=>{
+             openDialog();
+           }}>
+            <Text style={styles.input}>{state != '' ? state : 'Select your State'}</Text>
+
+           </TouchableOpacity>
+
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>District</Text>
+
+          <TouchableOpacity onPress={() => {
+            openDialog1();
+          }}>
+            <Text style={styles.input}>{district != '' ? district : 'Select your District'}</Text>
+
+          </TouchableOpacity>
+       
+
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>Enter your city name</Text>
+
+          <TextInput style={styles.input} placeholder="Enter your city name" value={city} onChangeText={(text) => set_city(text)} />
+
+
+
           <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 }}>Permanent Address</Text>
 
-          <TextInput style={styles.input} placeholder="Enter Permanent address here" value={permanent_address} onChangeText={(text) => set_permanent_address(text)} />
+          <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top' }} placeholder="Enter Permanent address here" value={permanent_address} onChangeText={(text) => set_permanent_address(text)} />
 
 
-          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 }}>Present Address</Text>
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10, marginTop: 10 }}>Present Address</Text>
 
-          <TextInput style={styles.input} placeholder="Enter Present address here" value={present_address} onChangeText={(text) => set_present_address(text)} />
+          <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top' }} placeholder="Enter Present address here" value={present_address} onChangeText={(text) => set_present_address(text)} />
           {/* <View style={styles.footer}> */}
 
 
-        
 
-        {c_type=="employee" && (
+
+          {/* {c_type=="employee" && (
 
           <View>
         
@@ -537,26 +735,106 @@ const getProfile = async () => {
       
           </View>
 
-        )}
+        )} */}
 
 
 
-          <TouchableOpacity style={{backgroundColor:Colors.orange,padding:12,borderRadius:10,marginTop:'4%'}} onPress={() => {
+          <TouchableOpacity style={{ backgroundColor: Colors.orange, padding: 12, borderRadius: 10, marginTop: '4%' }} onPress={() => {
 
             updateProfile()
-           
+
 
           }}>
 
 
-            <Text style={{textAlign:'center',color:Colors.white,fontWeight:'bold'}}>Register Now</Text>
+            <Text style={{ textAlign: 'center', color: Colors.white, fontWeight: 'bold' }}>Register Now</Text>
           </TouchableOpacity>
           {/* </View> */}
 
 
 
+
+
+
+
         </View>
       </ScrollView>
+
+
+      <Modal visible={isDialogVisible} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.dialogContainer}>
+            <Text style={{ color: Colors.black, alignSelf: 'center', marginBottom: 20, fontWeight: 'bold' }}>Select State</Text>
+
+            <FlatList style={{ marginTop: 10, marginBottom: 10,height:300 }}
+              data={state_list}
+
+              keyExtractor={(item) => item._id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{}}
+                  onPress={() => select_state(item)}
+                >
+                  <Text style={{ color: Colors.textcolor,padding:10 }}>{item.name}</Text>
+                </TouchableOpacity>
+
+              )}
+            />
+
+            <TouchableOpacity onPress={() => {
+              closeDialog()
+            }}>
+              <Text>Close</Text>
+            </TouchableOpacity>
+
+
+
+
+
+
+
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={isDialogVisible2} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.dialogContainer}>
+            <Text style={{ color: Colors.black, alignSelf: 'center', marginBottom: 20, fontWeight: 'bold' }}>Select District</Text>
+
+            <FlatList style={{ marginTop: 10, marginBottom: 10, height: 300 }}
+              data={distrcit_list}
+
+              keyExtractor={(item) => item._id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{}}
+                  onPress={() => select_district(item)}
+                >
+                  <Text style={{ color: Colors.textcolor, padding: 10 }}>{item.name}</Text>
+                </TouchableOpacity>
+
+              )}
+            />
+
+
+
+            <TouchableOpacity onPress={()=>{
+              closeDialog1()
+            }}>
+              <Text>Close</Text>
+            </TouchableOpacity>
+
+
+
+
+
+
+
+          </View>
+        </View>
+      </Modal>
+
 
 
 
@@ -604,11 +882,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     padding: 10,
-    fontSize:12
+    fontSize: 12
 
 
   },
- 
+
   genderDropdown: {
 
     borderColor: Colors.gray,
@@ -639,7 +917,7 @@ const styles = StyleSheet.create({
 
 
     width: '100%',
-  
+
     marginTop: '2%',
 
     height: '8%', // Set the desired height here
@@ -661,7 +939,36 @@ const styles = StyleSheet.create({
 
     width: "100%"
 
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+  },
+  container2: {
+    flex: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    margin: 4,
+    alignSelf: 'flex-start'
+
+
+
+
+  },
+  dialogContainer: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: 20,
+    marginStart: 10,
+    marginEnd: 10,
+    borderRadius: 10,
+
+  },
 });
 
 export default RegistrationFormScreen
