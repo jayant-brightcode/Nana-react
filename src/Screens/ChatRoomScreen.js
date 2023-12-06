@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native'; // Import navigation f
 import { useRoute } from '@react-navigation/native';
 import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
-
+import CommentDialog from '../component/MemberShipDialog';
 
 
 
@@ -19,10 +19,25 @@ const ChatRoomScreen = () => {
     const [get_chat_room, set_chat_room] = useState([])
     const [loading, setLoading] = useState(false);
 
+    const [isDialogVisible, setDialogVisible] = useState(false);
 
+    const openDialog = () => {
+        setDialogVisible(true);
+      };
+    
+      const closeDialog = () => {
+        setDialogVisible(false);
+      };
     useEffect(() => {
         load_chat_room();
     }, []);
+
+    const handleButtonPress = () => {
+        // Handle button press action
+        closeDialog();
+        navigation.navigate("ChoosePlanScreen")
+     
+      };
     const renderJobItem = ({ item }) => {
 
 
@@ -117,8 +132,10 @@ const ChatRoomScreen = () => {
 
 
             } else {
-                console.error('Error:', response.status, response.statusText);
-                setLoading(false)
+                if(response.status==401){
+                    setLoading(false)
+                    openDialog()
+                }
             }
         } catch (error) {
             console.error('Fetch error:', error);
@@ -165,6 +182,12 @@ const ChatRoomScreen = () => {
                     renderItem={renderJobItem}
                 />
             </View>
+
+            <CommentDialog
+        isVisible={isDialogVisible}
+        onClose={closeDialog}
+        onButtonPress={handleButtonPress}
+      />
 
 
         </View>

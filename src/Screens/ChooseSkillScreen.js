@@ -948,12 +948,12 @@ const ChooseSkillScreen = () => {
 
              <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 }}>Profession Experience</Text>
 
-             <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top' }} placeholder="Profession Experience" value={profession_expr} onChangeText={(text) => set_profession_expr(text)} />
+             <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top',borderColor:Colors.orange,borderWidth:1 }} placeholder="Profession Experience" value={profession_expr} onChangeText={(text) => set_profession_expr(text)} />
            
 
              <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 }}>Profession Desciption</Text>
 
-             <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top' }} placeholder="Profession Description" value={profession_desc} onChangeText={(text) => set_profession_desc(text)} />
+             <TextInput style={{ backgroundColor: Colors.gray, height: 70, width: '100%', borderRadius: 10, padding: 10, textAlignVertical: 'top' ,borderColor:Colors.orange,borderWidth:1}} placeholder="Profession Description" value={profession_desc} onChangeText={(text) => set_profession_desc(text)} />
             
              <FlatList
                  data={profession_photo}
@@ -1184,7 +1184,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
         padding: 10,
-        fontSize: 12
+        fontSize: 12,
+        borderColor:Colors.orange,
+        borderWidth:1
 
 
     },

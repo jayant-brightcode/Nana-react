@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message'; // Make sure to import react-nat
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
 import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
-
+import CommentDialog from '../component/MemberShipDialog';
 
 const plans = [
     { id: 1, year: '1 Year', price: 999 },
@@ -26,6 +26,8 @@ const MembershipHistoryScreen = () => {
     const [loading, setLoading] = useState(false);
     const [is_plan_expired, set_is_plan_expired] = useState(false);
     const [active_plan,set_active_plan] = useState({})
+    const [isDialogVisible_member, setDialogVisible_member] = useState(false);
+
     useEffect(() => {
         check_registration_expiry();
     }, []);
@@ -33,6 +35,21 @@ const MembershipHistoryScreen = () => {
     useEffect(() => {
         get_membership_history();
     }, []);
+
+    const handleButtonPress_member = () => {
+        // Handle button press action
+        closeDialog_member();
+        navigation.navigate("ChoosePlanScreen")
+     
+      };
+
+    const openDialog_member = () => {
+        setDialogVisible_member(true);
+      };
+    
+      const closeDialog_member = () => {
+        setDialogVisible_member(false);
+      };
 
     const handleItemPress = (item) => {
         setSelectedItem(item);
@@ -92,6 +109,13 @@ const MembershipHistoryScreen = () => {
                 setPlan(data.registration_payment_history);
               
                 setLoading(false)
+
+                if(data.registration_payment_history.length==0){
+             
+                        
+                      openDialog_member()
+                  
+                }
 
 
 
@@ -279,7 +303,11 @@ const MembershipHistoryScreen = () => {
                 </View>
             )}
 
-          
+<CommentDialog
+        isVisible={isDialogVisible_member}
+        onClose={closeDialog_member}
+        onButtonPress={handleButtonPress_member}
+      />
 
         </View>
     )

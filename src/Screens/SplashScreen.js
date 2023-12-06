@@ -59,8 +59,14 @@ const SplashScreen = () =>{
     return(
         <View style={styles.container}>
         <StatusBar backgroundColor={Colors.orange}/>
-        <Animatable.Image ref={animatedViewRef}
-          source={require('../../assets/images/splash.jpg')} style={styles.backgroundImage}  />
+        <View style={styles.centered}>
+        <Animatable.Image
+          ref={animatedViewRef}
+          source={require('../../assets/images/logo.png')}
+          style={styles.backgroundImage}
+          resizeMode="contain" // Added resizeMode
+        />
+      </View>
         <Animatable.Image animation="slideInLeft"
           duration={1000} source={require('../../assets/images/splash_bottom.png')} style={styles.foregroundImage}  />
 
@@ -76,15 +82,21 @@ const styles = StyleSheet.create({
    
     },
     backgroundImage: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
+        alignSelf:'center',
+        
+        width: 200,
+        height: 200,
       },
     text: {
       fontSize: 16,
       marginTop: 16,
       color:Colors.white,
    
+    },
+    centered: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     foregroundImage: {
         position: 'absolute',

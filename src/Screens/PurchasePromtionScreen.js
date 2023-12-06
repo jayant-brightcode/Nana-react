@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import {  Button, FlatList ,TouchableWithoutFeedback, View, Image, TextInput, ActivityIndicator, StyleSheet, Text, StatusBar, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {  Button, FlatList ,TouchableWithoutFeedback, View, Image, TextInput, ActivityIndicator, StyleSheet, Text, StatusBar, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform ,Modal} from 'react-native';
 import Colors from '../Utils/Color';
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
 import Toast from 'react-native-toast-message';
@@ -8,7 +8,8 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import ImagePicker from 'react-native-image-crop-picker';
 import { request, PERMISSIONS } from 'react-native-permissions';
 import { getToken } from '../Utils/LocalStorage';
-
+import MapView, { Marker } from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
 const PurchasePromotionScreen = () => {
 
     const navigation = useNavigation();
@@ -23,6 +24,58 @@ const PurchasePromotionScreen = () => {
     const [showDatePicker1, setShowDatePicker1] = useState(false);
     const [images, setImages] = useState([]);
     const [video, setVideo] = useState(null);
+
+
+    const [show_pay_btn,set_show_pay_btn] = useState(false)
+
+    const [amount,set_amount] = useState(false)
+
+
+     const [region, setRegion] = useState({
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+
+  const [markerPosition, setMarkerPosition] = useState(null);
+  const [isMapModalVisible, setIsMapModalVisible] = useState(false);
+
+  useEffect(() => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setRegion({ ...region, latitude, longitude });
+       
+        
+      },
+      (error) => console.error(error),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  }, []);
+
+  const handleMapPress = (event) => {
+    const { coordinate } = event.nativeEvent;
+
+    console.log(coordinate)
+    setMarkerPosition(coordinate);
+   // setIsMapModalVisible(false)
+  };
+
+  const handleGetLocation = () => {
+    if (markerPosition) {
+      console.log(
+        `Selected Location: Latitude ${markerPosition.latitude}, Longitude ${markerPosition.longitude}`
+      );
+      // Handle the selected location as needed
+    } else {
+      console.log('No location selected');
+    }
+    setIsMapModalVisible(false);
+  };
+
+
+    
 
 
     useEffect(() => {
@@ -48,20 +101,68 @@ const PurchasePromotionScreen = () => {
         }
     };
 
+    // const pickImages = async () => {
+    //     try {
+    //         const results = await ImagePicker.openPicker({
+    //             multiple: true,
+    //             mediaType: 'photo',
+    //             cropping:true,
+                
+    //         });
+
+    //         const croppedImages = [];
+
+    //         for (const image of results) {
+    //           const croppedImage = await ImagePicker.openCropper({
+    //             path: image.path,
+         
+    //             // Add any other cropping options as needed
+    //           });
+        
+    //           if (croppedImage) {
+    //             croppedImages.push(croppedImage);
+    //           }
+    //         }
+
+    //         if (!results.cancelled) {
+    //             setImages([...images, ...results.map((image) => ({ uri: image.path }))]);
+    //         }
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+
     const pickImages = async () => {
         try {
             const results = await ImagePicker.openPicker({
                 multiple: true,
                 mediaType: 'photo',
+                cropping: true,
             });
-
-            if (!results.cancelled) {
-                setImages([...images, ...results.map((image) => ({ uri: image.path }))]);
+    
+            const croppedImages = [];
+    
+            for (const image of results) {
+                const croppedImage = await ImagePicker.openCropper({
+                    path: image.path,
+                    // Add any other cropping options as needed
+                });
+    
+                // Use the cropped image in the loop
+                if (croppedImage) {
+                    croppedImages.push({ uri: croppedImage.path });
+                }
+            }
+    
+            if (croppedImages.length > 0) {
+                // Set the state with cropped images
+                setImages([...images, ...croppedImages]);
             }
         } catch (error) {
             console.error(error);
         }
     };
+    
 
     const pickVideo = async () => {
         try {
@@ -69,8 +170,20 @@ const PurchasePromotionScreen = () => {
                 mediaType: 'video',
             });
 
+            console.log(result.duration)
+         
+
             if (!result.cancelled) {
-                setVideo({ uri: result.path });
+                if(result.duration >= 30000){
+                    Toast.show({
+                        type: 'success',
+                        text1: `Video length should be less or equal to 30 seconds`,
+                    });
+                    return;
+                   }else{
+                    setVideo({ uri: result.path });
+                   }
+                
             }
         } catch (error) {
             console.error(error);
@@ -90,7 +203,7 @@ const PurchasePromotionScreen = () => {
 
     const renderImageItem = ({ item, index }) => (
         <View style={{ margin: 5 }}>
-            <Image source={{ uri: item.uri }} style={{ width: 100, height: 100 }} />
+            <Image source={{ uri: item.uri }} style={{ width: 200, height: 150 }} />
             <TouchableOpacity
                 style={{
                     position: 'absolute',
@@ -135,23 +248,23 @@ const PurchasePromotionScreen = () => {
 
     const onDateChange = (event, selectedDate) => {
         if (event.type === 'set') {
+            setShowDatePicker(false);
             setChosenDate(selectedDate);
-            setShowDatePicker(false);
-        } else {
-            setShowDatePicker(false);
-
-        }
+           
+            set_show_pay_btn(false)
+        } 
+        
     };
 
 
     const onDateChange1 = (event, selectedDate) => {
         if (event.type === 'set') {
+            setShowDatePicker1(false);
             setChosenDate1(selectedDate);
-            setShowDatePicker1(false);
-        } else {
-            setShowDatePicker1(false);
-
-        }
+            
+            set_show_pay_btn(false)
+        } 
+      
     };
 
     const openDatePicker = () => {
@@ -163,6 +276,83 @@ const PurchasePromotionScreen = () => {
 
         setShowDatePicker1(true);
     };
+
+
+    const GetPromtionPrice = async () => {
+
+
+        const d1  = chosenDate.toDateString()
+        const d2 = chosenDate1.toDateString()
+
+        try {
+
+            setLoading(true)
+            const apiUrl = Remote.BASE_URL + "user/get_promotion_price";
+
+           
+
+             const d1  = chosenDate.toDateString()
+             const d2 = chosenDate1.toDateString()
+             const userData = {
+                from_date: d1,
+                to_date:d2
+             };
+
+             console.log(userData)
+
+
+             const token = await getToken()
+           
+
+
+             
+
+
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                    
+                },
+                body: JSON.stringify(userData),
+            });
+
+
+            const responsedata = await response.json();
+            console.log(responsedata)
+
+
+            if (response.ok) {
+                // Handle success
+
+                console.log(responsedata)
+               
+                set_amount(responsedata.amount_to_pay)
+                set_show_pay_btn(true)
+                setLoading(false)
+
+          
+
+
+            } else {
+                // Handle error
+                Toast.show({
+                    type: 'success',
+                    text1: responsedata.error,
+                });
+                setLoading(false)
+
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            setLoading(false)
+
+        }
+
+    }
+
 
 
     const purchase_promotion = async () => {
@@ -216,6 +406,17 @@ const PurchasePromotionScreen = () => {
                 });
             });
 
+            if (!markerPosition) {
+
+                Toast.show({
+                    type: 'success',
+                    text1: `Please select location`,
+                });
+
+                return;
+
+            }
+
             formData.append('title', title);
             formData.append('desc', desc);
             formData.append('from_date', chosenDate.toDateString());
@@ -223,6 +424,10 @@ const PurchasePromotionScreen = () => {
             formData.append('payment_amount', 1000);
             formData.append('payment_mode',"upi");
             formData.append('payment_status', 'success');
+            formData.append('latitude', markerPosition.latitude);
+            formData.append('longitude', markerPosition.longitude);
+        
+         
 
             const token = await getToken()
 
@@ -279,8 +484,8 @@ const PurchasePromotionScreen = () => {
 
              
           
-                <Text style={styles.text}>Signup</Text>
-                <Text style={{ color: Colors.dark_gray, fontWeight: 'bold', fontSize: 15 }}>for your dream job</Text>
+                <Text style={styles.text}>Promote</Text>
+                <Text style={{ color: Colors.dark_gray, fontWeight: 'bold', fontSize: 15 }}>for your Profile</Text>
 
                 <ScrollView style={styles.subTextContainer} automaticallyAdjustKeyboardInsets={true} showsVerticalScrollIndicator={false}>
                     <KeyboardAvoidingView
@@ -304,11 +509,11 @@ const PurchasePromotionScreen = () => {
 
 
                             <TextInput style={styles.input} placeholder="Enter title here" value={title} onChangeText={(text) => setTitle(text)} />
-                            <TextInput style={styles.input} placeholder="Enter description here"  value={desc} onChangeText={(text) => setDesc(text)} />
+                            <TextInput style={{height:'20%',backgroundColor:Colors.grayview,borderRadius:10,paddingStart:10,borderWidth:1,borderColor:Colors.orange}} multiline={true} placeholder="Enter description here"  value={desc} onChangeText={(text) => setDesc(text)} />
                             <View style={{marginBottom:10}}>
                                 <Text style={styles.labelText}>From Date</Text>
                                 <TouchableWithoutFeedback  onPress={openDatePicker} >
-                                    <Text style={{ height: 45, backgroundColor: Colors.grayview ,marginTop:10,padding:10}} >{chosenDate.toDateString()}</Text>
+                                    <Text style={{ height: 45, backgroundColor: Colors.grayview ,marginTop:10,padding:10,borderWidth:1,borderColor:Colors.orange}} >{chosenDate.toDateString()}</Text>
                                 </TouchableWithoutFeedback>
                                 {showDatePicker && (
                                     <DateTimePicker
@@ -325,7 +530,7 @@ const PurchasePromotionScreen = () => {
                             <View>
                                 <Text style={styles.labelText}>To Date</Text>
                                 <TouchableWithoutFeedback onPress={openDatePicker1} >
-                                    <Text style={{ height: 45, backgroundColor: Colors.grayview, marginTop: 10, padding: 10 }} >{chosenDate1.toDateString()}</Text>
+                                    <Text style={{ height: 45, backgroundColor: Colors.grayview, marginTop: 10, padding: 10,borderWidth:1,borderColor:Colors.orange }} >{chosenDate1.toDateString()}</Text>
                                 </TouchableWithoutFeedback>
                                 {showDatePicker1 && (
                                     <DateTimePicker
@@ -338,6 +543,43 @@ const PurchasePromotionScreen = () => {
                                     />
                                 )}
                             </View>
+
+                            <TouchableOpacity onPress={() => setIsMapModalVisible(true)}>
+        <Text style={{
+                                        borderColor:Colors.orange,
+                                        padding: 10,
+                                        borderWidth:2,
+                                        marginTop: 10,
+                                        borderRadius: 5,
+                                        color:Colors.orange
+                                    }}>Choose Location</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={isMapModalVisible}
+        onRequestClose={() => setIsMapModalVisible(false)}
+      >
+        <View>
+          <Text style={{width:'100%',fontWeight:'bold',fontSize:18,marginStart:10}}>Select Location</Text>
+          <MapView
+            style={{width:'100%',height:'90%'}}
+            initialRegion={region}
+            onPress={handleMapPress}
+          >
+            {markerPosition && (
+              <Marker coordinate={markerPosition} title="Selected Location" />
+            )}
+          </MapView>
+          <TouchableOpacity
+            style={{width:150,backgroundColor:Colors.orange,padding:10,alignSelf:'center',top:10}}
+            onPress={handleGetLocation}
+          >
+            <Text style={{textAlign:'center'}}>Get Location</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
 
                           
                             <TouchableOpacity onPress={pickImages}>
@@ -378,17 +620,31 @@ const PurchasePromotionScreen = () => {
                           
 
 
+                            <TouchableOpacity style={styles.button} onPress={() => { GetPromtionPrice() }
+
+
+                                    }>
+                                        <View style={styles.buttonContent}>
+                                            <Text style={styles.buttonText}>Get Price</Text>
+                                            {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
+                                        </View>
+                                    </TouchableOpacity>
+
 
                             
-                            <TouchableOpacity style={styles.button} onPress={() => { purchase_promotion() }
+
+                            {show_pay_btn && (
+                                        <TouchableOpacity style={styles.button} onPress={() => { purchase_promotion() }
 
 
-                            }>
-                                <View style={styles.buttonContent}>
-                                    <Text style={styles.buttonText}>NEXT</Text>
-                                    {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
-                                </View>
-                            </TouchableOpacity>
+                                        }>
+                                            <View style={styles.buttonContent}>
+                                                <Text style={styles.buttonText}>PAY NOW {amount}</Text>
+                                                {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
+                                            </View>
+                                        </TouchableOpacity>
+                            )}
+                           
 
 
 
@@ -458,6 +714,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
         paddingLeft: 10,
+        borderWidth:1,
+        borderColor:Colors.orange
 
 
     },
@@ -495,6 +753,34 @@ const styles = StyleSheet.create({
         height: 20,
         // Change the icon color
     },
+    map:{
+        height: '100%',
+         width: '100%'
+         ,flex:1
+    }
+    ,
+    modalContainer: {
+        flex: 1,
+        width:100,
+        height:100,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 16,
+      },
+      map: {
+        flex: 1,
+      },
+      getLocationButton: {
+        padding: 16,
+        backgroundColor: 'lightblue',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
 });
 
 export default PurchasePromotionScreen;

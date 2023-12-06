@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native'; // Import navigation f
 
 import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
-
+import CommentDialog from '../component/MemberShipDialog';
 
 
 
@@ -20,6 +20,7 @@ const LeaveApplicationScreen = () => {
     const [get_id, set_id] = useState('')
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [user_details, set_user_details] = useState({});
+    const [isDialogVisible_member, setDialogVisible_member] = useState(false);
 
     useEffect(() => {
         getProfile();
@@ -41,6 +42,21 @@ const LeaveApplicationScreen = () => {
 
         closeDialog();
     };
+
+    const handleButtonPress_member = () => {
+        // Handle button press action
+        closeDialog_member();
+        navigation.navigate("ChoosePlanScreen")
+     
+      };
+
+    const openDialog_member = () => {
+        setDialogVisible_member(true);
+      };
+    
+      const closeDialog_member = () => {
+        setDialogVisible_member(false);
+      };
 
     const renderJobItem = ({ item }) => {
 
@@ -205,8 +221,11 @@ const LeaveApplicationScreen = () => {
 
 
             } else {
-                console.error('Error:', response.status, response.statusText);
-                setLoading(false)
+                if(response.status==401){
+                    setLoading(false)
+                 
+                    openDialog_member()
+                }
             }
         } catch (error) {
             console.error('Fetch error:', error);
@@ -334,6 +353,13 @@ const LeaveApplicationScreen = () => {
                 />
             </View>
 
+
+
+            <CommentDialog
+        isVisible={isDialogVisible_member}
+        onClose={closeDialog_member}
+        onButtonPress={handleButtonPress_member}
+      />
           
 
 

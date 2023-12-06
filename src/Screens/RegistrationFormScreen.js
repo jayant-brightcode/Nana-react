@@ -27,6 +27,18 @@ const genders = [{
   value: 'Other'
 }];
 
+const genderlist = [{
+  name:"Male",
+  id:1
+},{
+  name:"Female",
+  id:2
+
+},{
+  name:'Other',
+  id:3
+}]
+
 
 const RegistrationFormScreen = () => {
 
@@ -77,14 +89,12 @@ const RegistrationFormScreen = () => {
         set_profile(data.profile_details)
         set_c_type(data.profile_details.customer_type)
         setName(data.profile_details.name)
+        setEmail(data.profile_details.email)
         if (data.profile_details.gender != null) {
           gender_setPicker(data.profile_details.gender)
 
         }
-        setChosenDate(new Date(data.profile_details.dob))
-        set_alternate_phone(data.profile_details.alternate_phone)
-        set_present_address(data.profile_details.present_address)
-        set_permanent_address(data.profile_details.permanent_address)
+     
         if (data.profile_details.average_price != null) {
           set_avg_amount(data.profile_details.average_price.toString())
         }
@@ -96,16 +106,65 @@ const RegistrationFormScreen = () => {
 
 
         if (page.screen == "profile") {
-          set_aadhar_number(data.profile_details.aadhar_number)
+          if(data.profile_details.aadhar_number!=null){
+            set_aadhar_number(data.profile_details.aadhar_number)
 
-          set_education(data.profile_details.education)
-  
+          }
+          if(data.profile_details.education!=null){
+            set_education(data.profile_details.education)
+
+          }
+
+          if(data.profile_details.city!=null){
+           
           set_city(data.profile_details.city)
+
+          }
+
+          if(data.profile_details.state!=null){
+            set_state(data.profile_details.state.name)
+            set_selected_state_id(data.profile_details.state._id)
+          }
+
+          if(data.profile_details.district!=null){
+            set_district(data.profile_details.district.name)
+            set_selected_district_id(data.profile_details.district._id)
+          }
+
+          if(data.profile_details.dob!=null){
+            setChosenDate(new Date(data.profile_details.dob))
+          }
+
+          if(data.profile_details.alternate_phone!=null){
+            set_alternate_phone(data.profile_details.alternate_phone)
+          }
+
+          if(data.profile_details.present_address!=null){
+            set_present_address(data.profile_details.present_address)
+          }
+
+          if(data.profile_details.present_address!=null){
+           
+          set_permanent_address(data.profile_details.permanent_address)
+          }
+
+
+
+          
+
+          
+          
+
   
-          set_state(data.profile_details.state.name)
-          set_selected_state_id(data.profile_details.state._id)
-          set_district(data.profile_details.district.name)
-          set_selected_district_id(data.profile_details.district._id)
+
+  
+
+        
+
+
+        
+        
+
 
         }
 
@@ -184,6 +243,7 @@ const RegistrationFormScreen = () => {
 
 
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
 
   const [alternate_phone, set_alternate_phone] = useState('');
   const [permanent_address, set_permanent_address] = useState('');
@@ -204,6 +264,7 @@ const RegistrationFormScreen = () => {
 
   const [isDialogVisible2, setDialogVisible2] = useState(false);
   const [selected_state_id_for_district, set_selected_state_id_for_district] = useState('');
+  const [gender_dialog_visible, set_gender_dialog_visible] = useState(false);
 
 
   useEffect(() => {
@@ -220,6 +281,15 @@ const RegistrationFormScreen = () => {
 
   const closeDialog = () => {
     setDialogVisible(false);
+  };
+
+  const openGenderDialog = () => {
+
+    set_gender_dialog_visible(true);
+  };
+
+  const closeGenderDialog = () => {
+      set_gender_dialog_visible(false);
   };
 
 
@@ -457,9 +527,21 @@ const RegistrationFormScreen = () => {
     }
 
     if (!aadhar_number.toString().trim()) {
+
+      
       Toast.show({
         type: 'success',
         text1: `Please enter aadhar number`,
+      });
+      return;
+    }
+
+    if (aadhar_number.toString().trim().length !==12) {
+
+      
+      Toast.show({
+        type: 'success',
+        text1: `Please enter correct aadhar number`,
       });
       return;
     }
@@ -620,6 +702,11 @@ const RegistrationFormScreen = () => {
           <TextInput style={styles.input} placeholder="Full Name" value={name} onChangeText={(text) => setName(text)} />
 
 
+          <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, marginBottom: 10 }}>Your Name Email here</Text>
+
+          <TextInput style={styles.input} placeholder="Full Name" value={email} onChangeText={(text) => setEmail(text)} />
+
+
           {/* <View style={styles.rowstyle}>
 
            
@@ -642,16 +729,18 @@ const RegistrationFormScreen = () => {
             </View> */}
           <View style={styles.rowstyle}>
             <View>
+            
+                
+             
               <Text style={{ fontSize: 12 }}>Gender</Text>
-              <Picker
-                onChanged={gender_setPicker}
-                options={genders}
-                style={{
-                  borderColor: Colors.orange,
-                  borderWidth: 1, marginTop: 8, height: 40, backgroundColor: Colors.grayview, borderRadius: 10, paddingStart: 10, paddingEnd: 10, color: Colors.textcolor }}
-                value={gender_picker}
+              <TouchableOpacity onPress={openGenderDialog}>
 
-              />
+        
+              <Text  style={{
+                  borderColor: Colors.orange,
+                  borderWidth: 1, height: 40, backgroundColor: Colors.grayview, borderRadius: 10, padding:10, color: Colors.textcolor }}
+              >{gender_picker}</Text>
+                  </TouchableOpacity>
 
             </View>
 
@@ -866,7 +955,44 @@ const RegistrationFormScreen = () => {
         </View>
       </Modal>
 
+      <Modal visible={gender_dialog_visible} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.dialogContainer}>
+            <Text style={{ color: Colors.black, alignSelf: 'center', marginBottom: 20, fontWeight: 'bold' }}>Select Your Gender</Text>
 
+            <FlatList style={{ marginTop: 10, marginBottom: 10,height:300 }}
+              data={genderlist}
+
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{}}
+                  onPress={() => {
+                    gender_setPicker(item.name)
+                    closeGenderDialog()
+                  } }
+                >
+                  <Text style={{ color: Colors.textcolor,padding:10,borderRadius:10,borderColor:Colors.orange,borderWidth:1,marginTop:10 }}>{item.name}</Text>
+                </TouchableOpacity>
+
+              )}
+            />
+
+            <TouchableOpacity onPress={() => {
+              closeGenderDialog()
+            }}>
+              <Text>Close</Text>
+            </TouchableOpacity>
+
+
+
+
+
+
+
+          </View>
+        </View>
+      </Modal>
 
 
 

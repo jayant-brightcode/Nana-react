@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native'; // Import navigation f
 import { useRoute } from '@react-navigation/native';
 import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
+import { Rating, AirbnbRating } from 'react-native-ratings';
+
 
 
 const jobs_list = [

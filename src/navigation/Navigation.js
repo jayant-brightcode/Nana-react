@@ -38,6 +38,8 @@ import WorkDashboardScreen from '../Screens/WorkDashBoardScreen';
 import ForgotPasswordScreen from '../Screens/ForgotPasswordScreem';
 import ForgotPasswordOtpScreen from '../Screens/ForgotPasswordOtpScreen';
 import NewPasswordScreen from '../Screens/NewPasswordScreen';
+import CartScreen from '../Screens/CartScreen';
+import CartScreens from '../Screens/CartScreens';
 
 const Stack = createNativeStackNavigator();
 
@@ -92,6 +94,7 @@ const AppNavigator = () => {
         <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
         <Stack.Screen name="ForgotPasswordOtpScreen" component={ForgotPasswordOtpScreen} />
         <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} />
+        <Stack.Screen name="CartScreens" component={CartScreens} />
 
 
       </Stack.Navigator>

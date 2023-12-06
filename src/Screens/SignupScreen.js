@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native'; // Import navigation f
 import Toast from 'react-native-toast-message';
 import { Remote } from '../Utils/Remote.js';
 
+
+
 const SignupScreen = () => {
 
   const navigation = useNavigation();
@@ -13,6 +15,12 @@ const SignupScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isChecked, setChecked] = useState(false);
+
+
+  const toggleCheckbox = () => {
+    setChecked(!isChecked);
+  };
 
 
   const signup = async () => {
@@ -21,6 +29,9 @@ const SignupScreen = () => {
 
   //   navigation.navigate("ChooseEmployeeTypeScreen")
   // return;
+
+
+    
 
     if (!name.trim()) {
       Toast.show({
@@ -69,6 +80,14 @@ const SignupScreen = () => {
       });
       return;
     }
+
+    if(!isChecked){
+      Toast.show({
+        type: 'success',
+        text1: `Please accept terms and condition`,
+      });
+      return;
+     }
 
     try {
 
@@ -152,7 +171,7 @@ const SignupScreen = () => {
         <ScrollView style={styles.subTextContainer} automaticallyAdjustKeyboardInsets={true}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}
+            style={{ flex: 1,height:550 }}
           >
         <View >
           <Text style={{ color: Colors.black, fontWeight: 'medium', fontSize: 15, marginBottom: 10, marginLeft: 20 }}>
@@ -187,6 +206,10 @@ const SignupScreen = () => {
 
           <TextInput style={styles.input} placeholder="Enter 8 digit Password" value={password} onChangeText={(text) => setPassword(text)} />
          
+          <TouchableOpacity onPress={toggleCheckbox} style={styles.checkboxContainer}>
+        {isChecked && <Text style={styles.checkmark}>✔</Text>}
+         </TouchableOpacity>
+         <Text style={styles.text}>I agree to the Terms and Conditions</Text>
           <TouchableOpacity style={styles.button} onPress={() => { signup() }
 
 
@@ -196,6 +219,21 @@ const SignupScreen = () => {
               {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
             </View>
           </TouchableOpacity>
+
+
+          <View style={{flexDirection:'row',alignSelf:'center',marginTop:10}}>
+
+        
+              <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 15 }}>Already have an account? </Text>
+              <TouchableOpacity onPress={()=>{
+                 navigation.popToTop();
+                navigation.replace("LoginScreen")
+              }}>
+              <Text style={{ color: Colors.orange, fontWeight: 'bold', fontSize: 15 }}>Login</Text>
+              </TouchableOpacity>
+
+
+              </View>
        
 
 
@@ -260,7 +298,7 @@ const styles = StyleSheet.create({
 
   input: {
     width: '100%',
-    height: '12%',
+    height: 45,
     backgroundColor: Colors.gray,
     borderRadius: 8,
     marginBottom: 10,
@@ -272,7 +310,7 @@ const styles = StyleSheet.create({
   },
   subTextContainer: {
     width: '80%',
-    marginBottom: 10,
+   
     top: '4%',
 
 
@@ -303,6 +341,24 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     // Change the icon color
+  },
+  checkboxContainer: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: Colors.orange,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkmark: {
+    color: Colors.orange,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  text: {
+    fontSize: 13,
+    color: Colors.textcolor,
   },
 });
 

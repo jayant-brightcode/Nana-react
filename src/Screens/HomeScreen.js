@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 
-import {View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ScrollView,Button, TouchableWithoutFeedback, TouchableHighlight, StatusBar, ActivityIndicator, PermissionsAndroid,Platform, } from 'react-native'
+import {RefreshControl,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ScrollView,Button, TouchableWithoutFeedback, TouchableHighlight, StatusBar, ActivityIndicator, PermissionsAndroid,Platform, } from 'react-native'
 import Colors from '../Utils/Color'
 import Toast from 'react-native-toast-message'; // Make sure to import react-native-toast-message
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
@@ -8,6 +8,8 @@ import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
 import Geolocation from 'react-native-geolocation-service';
 import { Rating, AirbnbRating } from 'react-native-ratings';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
+
 
 
 const bottomNavBar = [
@@ -53,9 +55,23 @@ const recent_list = [
 const HomeScreen = () => {
 
     const navigation = useNavigation()
+
+  
+    const [index, setIndex] = React.useState(0)
+    const isCarousel = React.useRef(null)
+
+
+    const [index2, setIndex2] = React.useState(0)
+    const isCarousel2 = React.useRef(null)
+
+
+    const [index3, setIndex3] = React.useState(0)
+    const isCarousel3 = React.useRef(null)
+
+
     const [selectedScreen, setSelectedScreen] = useState('Home'); // Set the initial selected screen
     const [loading, setLoading] = useState(false);
-  
+    const [refreshing, setRefreshing] = useState(false);
     const [selectedItem, setSelectedItem] = useState(bottomNavBar[0]);
     const [get_name, set_name] = useState('Nana Udyog');
     const [get_image, set_image] = useState('');
@@ -65,12 +81,33 @@ const HomeScreen = () => {
     const [get_all_nearby_daily_service_employee, set_all_nearby_daily_service_employee] = useState([]);
     const [get_all_nearby_monthly_service_employee, set_all_nearby_monthly_service_employee] = useState([]);
     const [get_all_employee, set_all_employee] = useState([]);
+    const[cart,set_cart]=useState(0)
+    const [first_banner, set_first_banner] = useState([]);
 
     //location 
     const [location, setLocation] = useState(null);
     const [error, setError] = useState(null);
 
+    //banner
 
+    const [bannerData,setBannerdata] = useState([])
+    const [bannerData2,setBannerdata2] = useState([])
+    const [bannerData3,setBannerdata3] = useState([])
+
+    const renderItem = ({ item }) => (
+        <View>
+            <TouchableOpacity onPress={()=>{
+                 const data={
+                    details:item
+                 }
+
+            navigation.navigate("ViewPromotionDetailScreen",{data:data})
+            }}>
+            <Image source={{uri:Remote.BASE_URL+item.photos[0]}} style={styles.bannerImage} />
+            </TouchableOpacity>
+     
+        </View>
+    );
     const requestLocationPermission = async () => {
         try {
             if (Platform.OS === 'android') {
@@ -131,12 +168,29 @@ const HomeScreen = () => {
             Geolocation.stopObserving();
         };
     }, []);
+
+
+ 
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        get_categories()
+         getProfile()
+         get_all_nearby_employees()
+
+         get_all_employees()
+         get_cart()
+        
+        setRefreshing(false);
+      
+        
+      };
   
     useEffect(() => {
         get_categories();
     }, []);
     useEffect(() => {
-       // get_all_nearby_employees();
+        get_cart()
     }, []);
 
     useEffect(() => {
@@ -150,6 +204,11 @@ const HomeScreen = () => {
     useEffect(() => {
        getProfile();
     }, []);
+    
+
+    useEffect(() => {
+        get_running_promotion();
+     }, []);
 
     const handleItemPress = (item) => {
         setSelectedItem(item);
@@ -291,7 +350,62 @@ const HomeScreen = () => {
     )};
 
 
+    const get_cart = async () => {
 
+
+        try {
+            setLoading(true)
+            const token = await getToken(); // Replace with your actual Bearer token
+            let apiUrl = Remote.BASE_URL + "user/get_cart"
+
+            // const queryParams = {
+            //     category_id: category._id,
+
+            // };
+
+          
+
+            // // Construct the URL with query parameters
+            // const urlWithParams = `${apiUrl}?${new URLSearchParams(queryParams)}`;
+
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json', // Adjust content type as needed
+                },
+            });
+
+
+
+            if (response.ok) {
+                const data = await response.json();
+
+
+                set_cart(data.cart.length);
+
+                setLoading(false)
+
+
+
+
+
+
+            } else {
+                console.error('Error:', response.status, response.statusText);
+                setLoading(false)
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            setLoading(false)
+        }
+
+
+
+
+
+    };
 
 
 
@@ -436,6 +550,8 @@ const HomeScreen = () => {
 
             if (response.ok) {
                 const data = await response.json();
+
+                
               
 
                 set_all_nearby_employee(data.employee);
@@ -448,7 +564,7 @@ const HomeScreen = () => {
 
 
             } else {
-                console.error('Errors:', response.status, response.statusText);
+                console.error('Errorss:', await response.json());
                 setLoading(false)
             }
         } catch (error) {
@@ -632,7 +748,7 @@ const HomeScreen = () => {
 
             }
         } catch (error) {
-            console.error('Errors:', error);
+            console.error('Error:', error);
             setLoading(false)
 
         }
@@ -688,7 +804,7 @@ const HomeScreen = () => {
 
 
             } else {
-                console.error('Errors:', response.status, response.statusText);
+                console.error('Error:', response.status, response.statusText);
                 setLoading(false)
             }
         } catch (error) {
@@ -702,6 +818,81 @@ const HomeScreen = () => {
 
     };
 
+    const get_running_promotion = async () => {
+
+
+        try {
+            setLoading(true)
+            const token = await getToken(); // Replace with your actual Bearer token
+            let apiUrl = Remote.BASE_URL + "user/get_running_promotion"
+
+
+            const queryParams = {
+                type: "home",
+              
+
+
+
+
+            };
+
+            // Construct the URL with query parameters
+            const urlWithParams = `${apiUrl}?${new URLSearchParams(queryParams)}`;
+
+
+
+
+
+
+            const response = await fetch(urlWithParams, {
+                method: 'GET',
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json', // Adjust content type as needed
+                },
+            });
+
+
+
+            if (response.ok) {
+                const data = await response.json();
+
+              //  console.log("BANNER",data.one)
+
+
+
+
+                setBannerdata(data.one);
+                setBannerdata2(data.two)
+                setBannerdata3(data.third)
+
+                setLoading(false)
+
+
+
+
+
+
+
+
+            } else {
+                if(response.status==401){
+                    setLoading(false)
+                    openDialog()
+                }
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            setLoading(false)
+        }
+
+
+
+
+
+    };
+
+
 
     return (
         <View style={styles.container} >
@@ -713,7 +904,7 @@ const HomeScreen = () => {
                     {get_image === null ? (
                         <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
                             <Image
-                                style={{ width:40, height: 40, borderRadius: 50 }}
+                                style={{ width:40, height: 40, borderRadius: 50}}
                                 source={require('../../assets/images/logo.png')}
                             />
                         </TouchableOpacity>
@@ -733,7 +924,17 @@ const HomeScreen = () => {
                         <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 20 }}>{get_name}</Text>
                         <Text style={{ color: Colors.white, fontWeight: 'medium', fontSize: 15 }}>Subscribed</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', width: 100, marginTop: 10, padding: 10, justifyContent: 'space-between', alignSelf: 'flex-end' }}>
+                    <View style={{ flexDirection: 'row', width: 150, marginTop: 10, padding: 10, justifyContent: 'space-between', alignSelf: 'flex-end' }}>
+
+                    <TouchableOpacity onPress={()=>{
+                         navigation.navigate("CartScreens")
+                    }}>
+                        <View>
+                           <Image style={{ width: 24, height: 24,resizeMode:'contain' }} source={require('../../assets/images/cart.png')}></Image>
+                            <Text style={{color:Colors.white,textAlign:'center',fontWeight:'bold',fontSize:9,bottom:16,backgroundColor:Colors.red,width:12,height:12}}>{cart}</Text>
+                        </View>
+
+                    </TouchableOpacity>
 
                      <TouchableOpacity onPress={()=>{
                             navigation.navigate("ChatRoomScreen")
@@ -744,13 +945,18 @@ const HomeScreen = () => {
                         <Image style={{ width: 24, height: 24,resizeMode:'contain' }} source={require('../../assets/images/notification.png')}></Image>
 
                     </View>
+                    
+
+                    
 
                 </View>
 
             </View>
 
 
-            <ScrollView style={{marginBottom:90}}>
+            <ScrollView  refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      } style={{marginBottom:90}}>
 
 
 
@@ -802,11 +1008,65 @@ const HomeScreen = () => {
 
                 </View>
 
+                <View style={{alignSelf:'center'}}>
+
+
+<Carousel
+
+    data={bannerData}
+
+    renderItem={renderItem}
+    sliderWidth={400}
+    itemWidth={400}
+    ref={isCarousel}
+    autoplay={true}
+    autoplayDelay={2000}
+    // loop={true}
+    onSnapToItem={(index) => setIndex(index)}
+    removeClippedSubviews={true}
+    containerCustomStyle={{
+        flexGrow: 0,
+        backgroundColor:Colors.white,
+       
+        marginTop: 10,
+
+
+    }}
+
+
+
+/>
+<Pagination
+
+    dotsLength={bannerData.length}
+    activeDotIndex={index}
+    containerStyle={{ paddingVertical: 10 }}
+    carouselRef={isCarousel}
+    dotStyle={{
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginHorizontal: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.92)'
+    }}
+    inactiveDotOpacity={0.4}
+    inactiveDotScale={0.6}
+    tappableDots={true}
+
+/>
+               </View>
+
                 <View style={{ marginStart: 10, marginEnd: 10, marginTop: 20, flexDirection: 'row' }}>
 
                     <Text style={{ color: Colors.textcolor, fontSize: 15, fontWeight: 'medium', flex: 10, marginTop: 4 }}>Job Categories</Text>
-                    <Image source={require('../../assets/images/next.png')} style={{ width: 18, height: 18, marginRight: 5, marginStart: 13, resizeMode: 'contain', flex: 1 }} />
+                   
+                    <TouchableOpacity onPress={()=>{
+                        navigation.navigate("AllCategoryScreen")
+                    }}>
+                      <Image source={require('../../assets/images/next.png')} style={{ width: 18, height: 18, marginRight: 5, marginStart: 13, resizeMode: 'contain', flex: 1 }} />
 
+                    </TouchableOpacity>
+                
 
 
 
@@ -922,6 +1182,54 @@ const HomeScreen = () => {
                     />
                 </View> */}
 
+<View style={{alignSelf:'center'}}>
+
+
+<Carousel
+
+    data={bannerData2}
+
+    renderItem={renderItem}
+    sliderWidth={400}
+    itemWidth={400}
+    ref={isCarousel2}
+    autoplay={true}
+    autoplayDelay={2000}
+    // loop={true}
+    onSnapToItem={(index2) => setIndex2(index2)}
+    removeClippedSubviews={true}
+    containerCustomStyle={{
+        flexGrow: 0,
+        backgroundColor:Colors.white,
+       
+        marginTop: 10,
+
+
+    }}
+
+
+
+/>
+<Pagination
+
+    dotsLength={bannerData2.length}
+    activeDotIndex={index2}
+    containerStyle={{ paddingVertical: 10 }}
+    carouselRef={isCarousel2}
+    dotStyle={{
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginHorizontal: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.92)'
+    }}
+    inactiveDotOpacity={0.4}
+    inactiveDotScale={0.6}
+    tappableDots={true}
+
+/>
+               </View>
+
 
                 <View style={{ marginStart: 10, marginEnd: 10, marginTop: 10, flexDirection: 'row' }}>
 
@@ -944,6 +1252,55 @@ const HomeScreen = () => {
                         scrollEnabled={false}
                     />
                 </View>
+
+
+                <View style={{alignSelf:'center'}}>
+
+
+<Carousel
+
+    data={bannerData3}
+
+    renderItem={renderItem}
+    sliderWidth={400}
+    itemWidth={400}
+    ref={isCarousel3}
+    autoplay={true}
+    autoplayDelay={2000}
+    // loop={true}
+    onSnapToItem={(index3) => setIndex3(index3)}
+    removeClippedSubviews={true}
+    containerCustomStyle={{
+        flexGrow: 0,
+        backgroundColor:Colors.white,
+       
+        marginTop: 10,
+
+
+    }}
+
+
+
+/>
+<Pagination
+
+    dotsLength={bannerData3.length}
+    activeDotIndex={index3}
+    containerStyle={{ paddingVertical: 10 }}
+    carouselRef={isCarousel3}
+    dotStyle={{
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginHorizontal: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.92)'
+    }}
+    inactiveDotOpacity={0.4}
+    inactiveDotScale={0.6}
+    tappableDots={true}
+
+/>
+               </View>
 
                 <View style={{ marginStart: 10, marginEnd: 10, marginTop: 10, flexDirection: 'row' }}>
 
@@ -1011,7 +1368,8 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor:Colors.white
     },
     selectedItem: {
         borderColor: Colors.blue,
@@ -1081,6 +1439,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    bannerImage: {
+        padding: 10,
+        width: 370,
+        height: 120,
+        borderRadius:10,
+        alignSelf:'center'
+
+
     },
 
 })

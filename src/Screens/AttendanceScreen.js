@@ -576,8 +576,8 @@ const AttendanceScreen = () => {
 
                 <View style={{flex:4}}>
 
-                    <Text style={{ fontWeight: 'bold', fontSize: 16, color: Colors.black }}>Payment Status - {get_monthly_payment.payment} </Text>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16, marginTop: 2 }}>Amount to pay - Rs. {get_monthly_payment.amount}</Text>
+                    <Text style={{ fontWeight: 'bold', fontSize: 13, color: Colors.black }}>Payment Status - {get_monthly_payment.payment} </Text>
+                    <Text style={{ fontWeight: 'bold', fontSize: 13, marginTop: 2 }}>Amount to pay - Rs. {get_monthly_payment.amount}</Text>
 
                 </View>
 
@@ -591,7 +591,7 @@ const AttendanceScreen = () => {
 
 
                 }>
-                    <View style={{ marginTop: 10, marginBottom: 10 }}>
+                    <View style={{ marginTop: 10 }}>
                         <Text style={{ backgroundColor: Colors.orange, padding: 10, color: Colors.white, textAlign: 'center', marginStart: 8 }}>Pay Now</Text>
                         {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                     </View>

@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ScrollView, TouchableWithoutFeedback, TouchableHighlight,ActivityIndicator} from 'react-native'
+import { RefreshControl,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ScrollView, TouchableWithoutFeedback, TouchableHighlight,ActivityIndicator} from 'react-native'
 import Colors from '../Utils/Color'
 import Toast from 'react-native-toast-message'; // Make sure to import react-native-toast-message
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
@@ -40,11 +40,21 @@ const AllCategoryScreen = ()=>{
 
     const [get_category,set_category] = useState([])
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
 
     useEffect(() => {
        get_categories();
     }, []);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        get_categories()
+       
+        setRefreshing(false);
+      
+        
+      };
 
     const renderCategoryList = ({ item }) => (
         <TouchableOpacity onPress={() => {
@@ -154,12 +164,15 @@ const AllCategoryScreen = ()=>{
                 )}
 
                 <FlatList
-
+                     
                     data={get_category}
                     numColumns={3}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(item) => item._id.toString()}
                     renderItem={renderCategoryList}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                      }
                 />
             </View>
 

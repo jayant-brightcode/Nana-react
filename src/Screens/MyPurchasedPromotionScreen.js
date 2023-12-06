@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ActivityIndicator, Modal, TouchableWithoutFeedback } from 'react-native'
+import { RefreshControl,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ActivityIndicator, Modal, TouchableWithoutFeedback } from 'react-native'
 import Colors from '../Utils/Color'
 import Toast from 'react-native-toast-message'; // Make sure to import react-native-toast-message
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
@@ -9,6 +9,7 @@ import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
 
 import { useRoute } from '@react-navigation/native';
+import CommentDialog from '../component/MemberShipDialog';
 
 
 
@@ -17,11 +18,23 @@ const MyPurchasedPromotionScreen = () => {
 
     const route = useRoute();
     const { page } = route.params
+    console.log(page)
     const navigation = useNavigation();
     const [get_request, set_request] = useState([])
+    const [isDialogVisible, setDialogVisible] = useState(false);
 
- 
+    const [refreshing, setRefreshing] = useState(false);
+
     const [loading, setLoading] = useState(false);
+
+
+    const openDialog = () => {
+        setDialogVisible(true);
+      };
+    
+      const closeDialog = () => {
+        setDialogVisible(false);
+      };
 
     const bannerData = [
         { id: 1, imageUrl: '../../assets/images/banner1.png' },
@@ -32,6 +45,20 @@ const MyPurchasedPromotionScreen = () => {
     const isCarousel = React.useRef(null)
 
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        if(page.screen=="setting"){
+            get_purchased_promotion();
+
+        }else{
+            get_running_promotion();
+        }
+        
+        setRefreshing(false);
+      
+        
+      };
+  
 
     useEffect(() => {
         if(page.screen=="setting"){
@@ -42,22 +69,30 @@ const MyPurchasedPromotionScreen = () => {
         }
     }, []);
 
-
+    const handleButtonPress = () => {
+        // Handle button press action
+        closeDialog();
+        navigation.navigate("ChoosePlanScreen")
+     
+      };
+    
  
 
     const renderJobItem = ({ item }) => {
 
-
+    
 
         const renderItem = ({ item }) => 
       
-
+        
+       
           
             (
 
             
             <View>
-                <Image source={{ uri: Remote.BASE_URL + item }} style={styles.bannerImage} />
+                <Image  source={{ uri: Remote.BASE_URL + item }} style={styles.bannerImage} />
+              
               
             </View>
         );
@@ -133,6 +168,8 @@ const MyPurchasedPromotionScreen = () => {
                         <Text style={{ marginTop: 10, color: Colors.textcolor, fontWeight: 'medium', fontSize: 12, textAlign: 'center', borderColor: Colors.fadeOrange, borderWidth: 2, padding: 10 }}>view more</Text>
 
                         </TouchableOpacity>
+
+                        <Text style={{position:'absolute',alignSelf:'flex-end',top:10,end:10,backgroundColor:Colors.orange,padding:8,color:Colors.white}}><Text>view - {item.view_count.length}</Text></Text>
                         {/* <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12 }}>End Date - {new Date(item.to_date).toDateString() }</Text>
                         <Text style={{ color: Colors.red, fontWeight: 'bold', fontSize: 12 }}>Paid - Rs.{item.payment_amount}</Text> */}
 
@@ -190,6 +227,8 @@ const MyPurchasedPromotionScreen = () => {
             if (response.ok) {
                 const data = await response.json();
 
+                console.log(data)
+
 
 
 
@@ -205,8 +244,12 @@ const MyPurchasedPromotionScreen = () => {
 
 
             } else {
-                console.error('Error:', response.status, response.statusText);
-                setLoading(false)
+                if(response.status==401){
+                    setLoading(false)
+                    openDialog()
+                }
+              //  console.error('Error:', response.status, response.statusText);
+               
             }
         } catch (error) {
             console.error('Fetch error:', error);
@@ -263,8 +306,10 @@ const MyPurchasedPromotionScreen = () => {
 
 
             } else {
-                console.error('Error:', response.status, response.statusText);
-                setLoading(false)
+                if(response.status==401){
+                    setLoading(false)
+                    openDialog()
+                }
             }
         } catch (error) {
             console.error('Fetch error:', error);
@@ -330,10 +375,15 @@ const MyPurchasedPromotionScreen = () => {
                         data={get_request}
                         keyExtractor={(item) => item._id.toString()}
                         renderItem={renderJobItem}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                          }
                     />
                 </View>
            )}
 
+
+{page.screen!="setting" && (
             <View style={{ marginBottom: '20%' }}>
 
                 <FlatList
@@ -341,13 +391,21 @@ const MyPurchasedPromotionScreen = () => {
                     data={get_request}
                     keyExtractor={(item) => item._id.toString()}
                     renderItem={renderJobItem}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                      }
                 />
             </View>
+)}
 
           
 
 
-
+        <CommentDialog
+        isVisible={isDialogVisible}
+        onClose={closeDialog}
+        onButtonPress={handleButtonPress}
+      />
             
 
 
@@ -420,11 +478,12 @@ const styles = StyleSheet.create({
     bannerImage: {
         padding: 10,
         width: 400,
-        height: 300,
+        height: 200,
         borderRadius: 10,
         alignSelf: 'center',
+      
  
-        resizeMode:'contain'
+       
 
 
     },

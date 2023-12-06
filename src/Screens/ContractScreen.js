@@ -371,12 +371,12 @@ const ContractScreen = () => {
 
                         <View>
                             <Text style={styles.labelText}>Your Name</Text>
-                            <TextInput style={{ backgroundColor: Colors.grayview, borderRadius: 10, padding: 10, marginTop: 10, marginBottom: 10 }} placeholder='Enter Name here ' value={name} onChangeText={(text) => set_name(text)}></TextInput>
+                            <TextInput style={{ backgroundColor: Colors.grayview, borderRadius: 10, padding: 10, marginTop: 10, marginBottom: 10,borderColor:Colors.orange,borderWidth:1 }} placeholder='Enter Name here ' value={name} onChangeText={(text) => set_name(text)}></TextInput>
                         </View>
 
                         <View>
                             <Text style={styles.labelText}>Your Phone Number</Text>
-                            <TextInput style={{ backgroundColor: Colors.grayview, borderRadius: 10, padding: 10, marginTop: 10 }} placeholder='Enter Phone number here ' value={phone} onChangeText={(text) => set_phone(text)}></TextInput>
+                            <TextInput style={{ backgroundColor: Colors.grayview, borderRadius: 10, padding: 10, marginTop: 10,borderColor:Colors.orange,borderWidth:1 }} placeholder='Enter Phone number here ' value={phone} onChangeText={(text) => set_phone(text)}></TextInput>
                         </View>
 
                      
@@ -449,7 +449,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         padding: 10,
         marginTop: 10,
-        color: Colors.dark_gray
+        color: Colors.dark_gray,
+        borderColor:Colors.orange,
+        borderWidth:1
 
 
 
@@ -461,6 +463,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
         padding: 10,
+        borderColor:Colors.orange,
+        borderWidth:1
 
 
     },

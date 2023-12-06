@@ -13,11 +13,87 @@ const ViewPromotionDetailScreen = () => {
 
     const route = useRoute();
     const { data } = route.params
+
+
+    console.log("DETAILS",data.details.user_id)
+
+   
    
     const [index, setIndex] = React.useState(0)
     const isCarousel = React.useRef(null)
 
-    console.log(data.details.photos)
+   
+
+
+    useEffect(() => {
+        // Check and request permission on component mount
+        AddViewToPromotion();
+    }, []);
+
+
+
+
+    const AddViewToPromotion = async () => {
+    
+
+      try {
+
+ 
+            const apiUrl = Remote.BASE_URL + "user/add_view_count";
+
+        
+
+            const userData = {
+                promotion_id: data.details._id,
+              
+
+            };
+
+           
+
+           
+
+
+            const token = await getToken()
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+
+            const responsedata = await response.json();
+            console.log(responsedata)
+
+
+            if (response.ok) {
+                // Handle success
+
+                console.log("ok")
+              
+         
+
+          
+
+
+            } else {
+                // Handle error
+
+                console.log("not ok")
+               
+
+            }
+        } catch (error) {
+        
+            console.log(error)
+        }
+
+    }
+
 
 
     const renderItem = ({ item }) =>
@@ -111,6 +187,29 @@ const ViewPromotionDetailScreen = () => {
             <View style={{ height: 1, marginTop: 10, backgroundColor: Colors.textcolor }}></View>
 
 
+            <View style={{margin:10}}>
+                <Text style={{ color: Colors.textcolor, marginStart: 10 ,fontWeight:'bold'}}>Profession Name</Text>
+                <Text style={{ color: Colors.textcolor, marginStart: 10,padding:10,backgroundColor:Colors.grayview,marginTop:2 }}>{data.details.user_id.profession_name}</Text>
+
+                <Text style={{ color: Colors.textcolor, marginStart: 10,marginTop:10,fontWeight:'bold' }}>Profession Description </Text>
+                    <Text style={{ color: Colors.textcolor, fontWeight: "300", padding: 10, marginTop: 2 }}>{data.details.user_id.profession_description}</Text>
+         
+         
+                <Text style={{ color: Colors.textcolor, marginStart: 10, marginTop: 10 ,fontWeight:'bold'}}>Profession Experience</Text>
+                    <Text style={{ color: Colors.textcolor, fontWeight: "300", padding: 10, marginTop: 2 }}>{data.details.user_id.profession_experience}</Text>
+         
+
+                    {/* <Text style={{ color: Colors.textcolor, marginStart: 10, marginTop: 10, fontWeight: 'bold' }}>Profession Photos</Text>
+
+                    <FlatList
+                        data={profile.profession_photo}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={renderImageItem}
+                        horizontal
+                    /> */}
+            </View>
+
+
             <Text style={{ fontSize: 15, margin: 10,fontWeight:'bold' }}>Know about us</Text>
             <Video
                 source={{ uri: Remote.BASE_URL+data.details.vide }}
@@ -156,6 +255,8 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         width: 300,
         height: 200,
+        
+        
         
     },
 

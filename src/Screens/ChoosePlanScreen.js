@@ -137,7 +137,14 @@ const ChoosePlanScreen = () => {
                     }}>
                         <Text style={{alignSelf:'center',color:Colors.white}}>PAY NOW</Text>
                     </TouchableOpacity>
-                  
+                    <TouchableOpacity onPress={()=>{
+                                  navigation.popToTop();
+                                  navigation.replace("HomeScreen")
+                    }}>
+                    <Text style={{alignSelf:'center',fontWeight:'bold',marginTop:10,color:Colors.textcolor}}>SKIP</Text>
+                 
+                    </TouchableOpacity>
+                    
                 </View>
 
                 {/* <View>

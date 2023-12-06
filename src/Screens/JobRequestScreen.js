@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ActivityIndicator, Modal, Linking } from 'react-native'
+import { RefreshControl,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, TextInput, ActivityIndicator, Modal, Linking } from 'react-native'
 import Colors from '../Utils/Color'
 import Toast from 'react-native-toast-message'; // Make sure to import react-native-toast-message
 import { useNavigation } from '@react-navigation/native'; // Import navigation functions
@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native'; // Import navigation f
 import { getToken } from '../Utils/LocalStorage';
 import { Remote } from '../Utils/Remote';
 import { Rating, AirbnbRating } from 'react-native-ratings';
+import CommentDialog from '../component/MemberShipDialog';
 
 
 
@@ -15,6 +16,7 @@ import { Rating, AirbnbRating } from 'react-native-ratings';
 
 const JobRequestScreen = () => {
     const navigation = useNavigation()
+    const [refreshing, setRefreshing] = useState(false);
 
     const [get_request, set_request] = useState([])
     const [loading, setLoading] = useState(false);
@@ -32,6 +34,7 @@ const JobRequestScreen = () => {
     const [job_id,set_job_id] = useState('')
 
     const [selectedItem, setSelectedItem] = useState(null);
+    const [isDialogVisible_member, setDialogVisible_member] = useState(false);
 
     const [mylat,set_my_lat] = useState('')
     const [mylong,set_my_long] =useState('')
@@ -44,6 +47,16 @@ const JobRequestScreen = () => {
         get_job_request();
     }, []);
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        getProfile()
+        get_job_request()
+       
+        setRefreshing(false);
+      
+        
+      };
+
     const openDialog = () => {
         console.log(user_details)
         setDialogVisible(true);
@@ -53,6 +66,21 @@ const JobRequestScreen = () => {
    
         setDialogVisible1(true);
     };
+
+    const handleButtonPress_member = () => {
+        // Handle button press action
+        closeDialog_member();
+        navigation.navigate("ChoosePlanScreen")
+     
+      };
+
+    const openDialog_member = () => {
+        setDialogVisible_member(true);
+      };
+    
+      const closeDialog_member = () => {
+        setDialogVisible_member(false);
+      };
 
     const open_price_dialog = () => {
    
@@ -289,7 +317,7 @@ const JobRequestScreen = () => {
                                     </View>
                                 </TouchableOpacity>)}
 
-                            {item.from_user_id._id.toString() == get_id.toString() && item.application_status == "employee left the job" && (
+                            {/* {item.from_user_id._id.toString() == get_id.toString() && item.application_status == "employee left the job" && (
 
                                 <TouchableOpacity style={styles.button1} onPress={() => {
                                      setSelectedItem(item) 
@@ -301,23 +329,24 @@ const JobRequestScreen = () => {
                                     <View style={{ width: '100%', marginTop: 10, marginBottom: 10 }}>
                                         <Text style={{ backgroundColor: Colors.orange, padding: 10, color: Colors.white,borderRadius:10,overflow:'hidden' }}>view details</Text>
                                         {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
-                                    </View>
-                                </TouchableOpacity>)}
+                                    {/* </View> */}
+                                {/* </TouchableOpacity>)} */}
 
-                            {item.from_user_id._id.toString() == get_id.toString() && item.application_status == "employee removed by employer" && (
+                            {/* {item.from_user_id._id.toString() == get_id.toString() && item.application_status == "employee removed by employer" && ( */}
 
-                                <TouchableOpacity style={styles.button1} onPress={() => {
-                                     setSelectedItem(item) 
-                                     get_employee_details_after_payment(item._id) 
-                                }
+                                {/* // <TouchableOpacity style={styles.button1} onPress={() => { */}
+                                {/* //      setSelectedItem(item)  */}
+                                {/* //      get_employee_details_after_payment(item._id)  */}
+                                {/* // } */}
 
 
-                                }>
-                                    <View style={{ width: '100%', marginTop: 10, marginBottom: 10 }}>
-                                        <Text style={{ backgroundColor: Colors.orange, padding: 10, color: Colors.white,borderRadius:10,overflow:'hidden' }}>view details</Text>
-                                        {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
-                                    </View>
-                                </TouchableOpacity>)}
+                                {/* // }> */}
+                                {/* //     <View style={{ width: '100%', marginTop: 10, marginBottom: 10 }}> */}
+                                {/* //         <Text style={{ backgroundColor: Colors.orange, padding: 10, color: Colors.white,borderRadius:10,overflow:'hidden' }}>view details</Text> */}
+                                {/* //         <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
+                                {/* //     </View> */}
+                                {/* // </TouchableOpacity> */}
+                                {/* //)} */}
 
 
 
@@ -381,14 +410,14 @@ const JobRequestScreen = () => {
 
                             {item.from_user_id._id.toString() == get_id.toString() && item.application_status == "employee left the job" && item.is_joined == true && item.job_pref.name == "Monthly Job" && (
 
-                                <TouchableOpacity style={styles.button1} onPress={() => {
+                                <TouchableOpacity style={{width:'100%'}} onPress={() => {
                                     navigation.navigate("MonthlyWorkDetailScreen", { detail: item })
                                 }
 
 
                                 }>
                                     <View style={{ width: '100%', marginTop: 10, marginStart: 10, marginBottom: 10 }}>
-                                    <Text style={{ backgroundColor: Colors.navcolor, padding: 10, color: Colors.white ,borderRadius:10,overflow:'hidden'}}>view work details</Text>
+                                    <Text style={{ backgroundColor: Colors.navcolor, padding: 10, color: Colors.white ,borderRadius:10,overflow:'hidden',textAlign:'center'}}>view work details</Text>
                                         {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                                     </View>
                                 </TouchableOpacity>)}
@@ -396,21 +425,21 @@ const JobRequestScreen = () => {
 
                             {item.from_user_id._id.toString() == get_id.toString() && item.application_status == "employee removed by employer" && item.is_joined == true && item.job_pref.name == "Monthly Job" && (
 
-                                <TouchableOpacity style={styles.button1} onPress={() => {
+                                <TouchableOpacity style={{width:'100%'}} onPress={() => {
                                     navigation.navigate("MonthlyWorkDetailScreen", { detail: item })
                                 }
 
 
                                 }>
-                                    <View style={{ width: '100%', marginTop: 10, marginStart: 10, marginBottom: 10 }}>
-                                    <Text style={{ backgroundColor: Colors.navcolor, padding: 10, color: Colors.white ,borderRadius:10,overflow:'hidden'}}>view work details</Text>
+                                    <View style={{ marginTop: 10, marginBottom: 10 }}>
+                                    <Text style={{ backgroundColor: Colors.navcolor, padding: 10, color: Colors.white ,borderRadius:10,overflow:'hidden',textAlign:'center'}}>view work details</Text>
                                         {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                                     </View>
                                 </TouchableOpacity>)}
 
                             {item.to_user_id._id.toString() == get_id.toString() && item.application_status == "employee left the job" && item.is_joined == true && item.job_pref.name == "Monthly Job" && (
 
-                                <TouchableOpacity style={styles.button1} onPress={() => {
+                                <TouchableOpacity style={{width:'100%'}} onPress={() => {
                                     navigation.navigate("MonthlyWorkDetailScreen", { detail: item })
                                 }
 
@@ -424,14 +453,14 @@ const JobRequestScreen = () => {
 
                             {item.to_user_id._id.toString() == get_id.toString() && item.application_status == "employee removed by employer" && item.is_joined == true && item.job_pref.name == "Monthly Job" && (
 
-                                <TouchableOpacity style={styles.button1} onPress={() => {
+                                <TouchableOpacity style={{width:'100%'}} onPress={() => {
                                     navigation.navigate("MonthlyWorkDetailScreen", { detail: item })
                                 }
 
 
                                 }>
-                                    <View style={{ width: '100%', marginTop: 10, marginStart: 10, marginBottom: 10 }}>
-                                    <Text style={{ backgroundColor: Colors.navcolor, padding: 10, color: Colors.white ,borderRadius:10,overflow:'hidden'}}>view work details</Text>
+                                    <View style={{ marginTop: 10, marginBottom: 10 }}>
+                                    <Text style={{ backgroundColor: Colors.navcolor, padding: 10, color: Colors.white ,borderRadius:10,overflow:'hidden',textAlign:'center'}}>view work details</Text>
                                         {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                                     </View>
                                 </TouchableOpacity>)}
@@ -549,7 +578,7 @@ const JobRequestScreen = () => {
 
 
                                 }>
-                                    <View style={{ width: '90%', marginTop: 10, marginBottom: 10 }}>
+                                    <View style={{  marginTop: 10, marginBottom: 10 }}>
                                     <Text style={{  padding: 10, color: Colors.white,textAlign:'center' ,borderRadius:10,overflow:'hidden',backgroundColor:'#68BBE3'}}>Write a Review</Text>
                                         {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                                     </View>
@@ -567,7 +596,7 @@ const JobRequestScreen = () => {
 
 
                                     }>
-                                        <View style={{ width: '90%', marginTop: 10, marginBottom: 10 }}>
+                                        <View style={{  marginTop: 10, marginBottom: 10 }}>
                                         <Text style={{  padding: 10, color: Colors.white,textAlign:'center' ,borderRadius:10,overflow:'hidden',backgroundColor:'#68BBE3'}}>Write a Review</Text>
                                             {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                                         </View>
@@ -585,7 +614,7 @@ const JobRequestScreen = () => {
 
 
                                             }>
-                                                <View style={{ width: '90%', marginTop: 10, marginBottom: 10 }}>
+                                                <View style={{  marginTop: 10, marginBottom: 10 }}>
                                                 <Text style={{  padding: 10, color: Colors.white,textAlign:'center' ,borderRadius:10,overflow:'hidden',backgroundColor:'#68BBE3'}}>Write a Review</Text>
                                                     {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
                                                 </View>
@@ -809,8 +838,11 @@ const JobRequestScreen = () => {
 
 
             } else {
-                console.error('Error:', response.status, response.statusText);
-                setLoading(false)
+                if(response.status==401){
+                    setLoading(false)
+                 
+                    openDialog_member()
+                }
             }
         } catch (error) {
             console.error('Fetch error:', error);
@@ -1245,6 +1277,7 @@ const JobRequestScreen = () => {
                     text1: responsedata.message,
                 });
                 setLoading(false)
+                get_job_request()
 
 
 
@@ -1502,6 +1535,9 @@ const JobRequestScreen = () => {
                     data={get_request}
                     keyExtractor={(item) => item._id.toString()}
                     renderItem={renderJobItem}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                      }
                 />
             </View>
 
@@ -1638,6 +1674,14 @@ const JobRequestScreen = () => {
                     </View>
                 </View>
             </Modal>
+
+                  
+
+            <CommentDialog
+        isVisible={isDialogVisible_member}
+        onClose={closeDialog_member}
+        onButtonPress={handleButtonPress_member}
+      />
 
 
         </View>

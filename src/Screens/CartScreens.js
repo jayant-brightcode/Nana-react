@@ -25,13 +25,15 @@ const languages = [
 ];
 
 
-const EmployeeDetailsScreen = () => {
+const CartScreens = () => {
 
     const navigation = useNavigation()
-    const route = useRoute();
-    const { user } = route.params
+   // const route = useRoute();
+   // const { user } = route.params
     const [get_skill, set_skill] = useState([]);
     const [rating, set_rating] = useState([]);
+    
+    const [cart, set_cart] = useState([])
     const [get_name, set_name] = useState("Nana Udyog");
     const [get_job_pref, set_job_pref] = useState("Nana Udyog");
     const [get_job_pref_id, set_job_pref_id] = useState("");
@@ -55,10 +57,136 @@ const EmployeeDetailsScreen = () => {
     const [profile, set_profile] = useState({});
     const [images, setImages] = useState([]);
     const [isDialogVisible_member, setDialogVisible_member] = useState(false);
+    const [next_id,set_next_id] = useState('')
+    const [cart_item, set_cart_item] = useState('');
 
     useEffect(() => {
-        getMyProfile();
+       getMyProfile();
     }, []);
+
+    useEffect(() => {
+        get_cart();
+    }, []);
+
+
+
+    const renderCart = ({ item }) => { 
+
+       
+        console.log(item)
+     const skillsString = item.to_user_id.skills.map(skill => skill.name).join(', ');
+   
+    
+         
+
+        
+        return (
+        <TouchableOpacity onPress={() => {
+               set_next_id(item.to_user_id._id)
+               
+               set_cart_item(item._id)
+               getProfile(item.to_user_id._id)
+              
+        }}>
+
+            <View style={{ marginTop: 13, flexDirection: 'row', alignItems: 'center', marginStart: 10, marginEnd: 10, backgroundColor: Colors.grayview, borderRadius: 10 }}>
+                <View
+                    style={{
+                        width: 50,
+                        height: 80,
+                        borderTopLeftRadius: 10,
+                        borderBottomLeftRadius: 10,
+                        backgroundColor: item.grayview,
+                        alignItems: 'center',
+                        marginStart:8,
+                        justifyContent: 'center', // Center the content vertically
+                    }}
+                >
+                         <TouchableOpacity onPress={()=>{
+                               navigation.navigate("EmployeeDetailScreen", { user: item.to_user_id })
+                         }}>
+                        <Image style={{ width: 50, height: 50, borderRadius:50 }} source={{ uri: Remote.BASE_URL + item.to_user_id.profile }} />
+
+                         </TouchableOpacity>
+                </View>
+                    <View style={{ flex: 1, marginLeft: 14, flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                        <Text style={{ color: Colors.textcolor, fontWeight: 'bold', fontSize: 16 }}>{item.to_user_id.name}</Text>
+                        {/* <Text style={{ color: Colors.textcolor, fontWeight: 'medium', fontSize: 12 }}><Text style={{ fontWeight: 'light' }}>Skills - </Text>{skillsString}</Text> */}
+                  
+
+                    </View>
+
+                <View style={{ flex: 0, justifyContent: 'flex-end', marginRight: 10 }}>
+                    <TouchableOpacity onPress={()=>{
+                             delete_cart(item._id)
+                    }}>
+                    <Image style={{ width: 40, height: 40 }} source={require('../../assets/images/remove_cart.png')} />
+
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </TouchableOpacity>
+
+
+    )};
+
+
+    const get_cart = async () => {
+
+
+        try {
+            setLoading(true)
+            const token = await getToken(); // Replace with your actual Bearer token
+            let apiUrl = Remote.BASE_URL + "user/get_cart"
+
+            // const queryParams = {
+            //     category_id: category._id,
+
+            // };
+
+          
+
+            // // Construct the URL with query parameters
+            // const urlWithParams = `${apiUrl}?${new URLSearchParams(queryParams)}`;
+
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json', // Adjust content type as needed
+                },
+            });
+
+
+
+            if (response.ok) {
+                const data = await response.json();
+
+
+                set_cart(data.cart);
+
+                setLoading(false)
+
+
+
+
+
+
+            } else {
+                console.error('Error:', response.status, response.statusText);
+                setLoading(false)
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            setLoading(false)
+        }
+
+
+
+
+
+    };
 
     const handleItemPress = (item) => {
         setSelectedItem(item);
@@ -220,15 +348,15 @@ const EmployeeDetailsScreen = () => {
         closeDialog();
     };
     useEffect(() => {
-        getProfile();
+      //  getProfile();
     }, []);
 
-    useEffect(() => {
-        get_ratings();
-    }, []);
+    // useEffect(() => {
+    //     get_ratings();
+    // }, []);
 
 
-    const getProfile = async () => {
+    const getProfile = async (id) => {
 
 
         try {
@@ -238,7 +366,7 @@ const EmployeeDetailsScreen = () => {
 
             
             const queryParams = {
-                user_id:user._id ,
+                user_id:id
 
             };
 
@@ -273,6 +401,8 @@ const EmployeeDetailsScreen = () => {
                     skill_list.push(data.profile_details.skills[index]._id)
                     
                 }
+
+                openDialog(c_type)
 
                 
 
@@ -514,7 +644,7 @@ const EmployeeDetailsScreen = () => {
 
 
 
-    const AddtoCart = async () => {
+    const delete_cart = async (id) => {
 
 
 
@@ -527,15 +657,16 @@ const EmployeeDetailsScreen = () => {
             const token = await getToken()
 
             setLoading(true)
-            const apiUrl = Remote.BASE_URL + "user/add_to_cart";
+            const apiUrl = Remote.BASE_URL + "user/delete_cart";
+
+      
 
             const userData = {
-                to_user_id: user._id
+                cart_id: id
 
 
             };
 
-           
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -549,9 +680,6 @@ const EmployeeDetailsScreen = () => {
             const responsedata = await response.json();
             console.log(responsedata)
 
-   
-           
-
 
             if (response.ok) {
                 // Handle success
@@ -559,8 +687,9 @@ const EmployeeDetailsScreen = () => {
                     type: 'success',
                     text1: responsedata.message,
                 });
-              
+                get_cart()
                 setLoading(false)
+
                 
 
 
@@ -571,16 +700,11 @@ const EmployeeDetailsScreen = () => {
 
 
             } else {
-                if(response.status==401){
-                    setLoading(false)
-                    
-                    openDialog_member()
-                }else{
-                    Toast.show({
-                        type: 'success',
-                        text1: responsedata.error,
-                    });
-                }
+                // Handle error
+                Toast.show({
+                    type: 'success',
+                    text1: responsedata.error,
+                });
                 setLoading(false)
 
             }
@@ -595,6 +719,11 @@ const EmployeeDetailsScreen = () => {
 
 
     };
+
+
+
+
+    
 
 
 
@@ -756,7 +885,7 @@ const EmployeeDetailsScreen = () => {
             const userData = {
                 job_pref_id: get_job_pref_id,
                 date: chosenDate,
-                to_user_id: user._id,
+                to_user_id: next_id,
                 desc: desc,
                 skill:choosed_list
 
@@ -784,6 +913,9 @@ const EmployeeDetailsScreen = () => {
                     type: 'success',
                     text1: responsedata.message,
                 });
+
+                delete_cart(cart_item)
+                
                 setLoading(false)
 
               
@@ -824,141 +956,38 @@ const EmployeeDetailsScreen = () => {
         <View style={{ flex: 1 }}>
 
 
-            <View style={{ height: 120,backgroundColor:Colors.orange }}>
-
-
-                <Image style={{ width: 150, height: 150,alignSelf:'center',marginTop:'10%',borderRadius:500 }} source={{uri: Remote.BASE_URL+profile.profile}}></Image>
-
-
-                <View style={{ flexDirection: 'row', height: 50, width: 50, alignItems: 'center', position: 'absolute', right: 20 }}>
-                    <Image style={{ width: 23, height: 23 }} source={require('../../assets/images/like.png')}></Image>
-                    <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 14, marginTop: 3, marginStart: 3 }}>{like}</Text>
-
-                </View>
-
-
-
-
-            </View>
-
+        
         
 
-            
-            <View style={{ alignItems: 'center', top: '10%' }}>
-               
-                <Text style={{ color: Colors.black, fontWeight: 'bold', fontSize: 18 }}>{get_name}</Text>
-                <Text style={{ color: Colors.textcolor, fontWeight: 'light', fontSize: 14 }}>Subscribed</Text>
+           <View style={styles.topbar}>
+            <View style={{ flexDirection: 'row', marginTop: 10, padding: 10, alignItems: 'center' }}>
+                <Image style={{ width: 20, height: 20 }} source={require('../../assets/images/arrow.png')}></Image>
+                <View style={{ marginStart: 15, flex: 1 }}>
+                    <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 20 }}>My Cart</Text>
 
-
-            </View>
-
-          
-            <View style={{ height: 50,marginTop:'23%' }}>
-                <Text style={{ color: Colors.black ,alignSelf:'center'}}>Rating</Text>
-                <AirbnbRating
-                    count={5} // Number of rating items
-                    reviews={['Terrible', 'Bad', 'OK', 'Good', 'Great']} // Optional review text
-                    defaultRating={avg_rating} // The rating to display (adjust as needed)
-                    size={15} // Size of the rating items
-                    showRating={false} // Set to false to hide the rating value
-                    isDisabled={true}
-                />
-            </View>
-
-         
-            <ScrollView>
-            <View>
-                <Text style={{ color: Colors.black, alignSelf: 'center' }}>skills</Text>
-
-                <View style={{alignItems:'center'}}>
-
-                    <FlatList
-
-                        data={get_skill}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item._id.toString()}
-                        renderItem={renderSkill}
-                    />
                 </View>
- 
+
+
             </View>
 
-            {/* <View style={{ height: 50, marginTop: 10 }}>
-
-                <Text style={{ color: Colors.orange, alignSelf: 'center',borderColor:Colors.orange,borderWidth:1,padding:10 }}>{get_job_pref}</Text>
-            </View> */}
-
-
-
-            <View style={{flexDirection:'row',justifyContent:'space-around'}}>
-
-            <TouchableOpacity style={styles.button1} onPress={() => {
-               { openDialog(c_type)}
-             }
-
-
-            }>
-                <View style={styles.buttonContent}>
-                    <Text style={styles.buttonText}>Send Request</Text>
-                    {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
-                </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity  onPress={() => {
-               { AddtoCart()}
-             }
-
-
-            }>
-                <View >
-                    <Text style={{borderColor:Colors.orange,borderWidth:1,marginTop:10,padding:10,textAlign:'center',color:Colors.orange,borderRadius:5,width:150}}>Add to Cart</Text>
-                    {/* <Image source={require('../../assets/images/back.png')} style={styles.icon} /> */}
-                </View>
-            </TouchableOpacity>
-
-            </View>
+        </View>
 
           
 
-
-
-
-            <View style={{height:2,backgroundColor:Colors.dark_gray,marginTop:10}}>
-
-             
-
-
-            </View>
-            <View style={{margin:10}}>
-                <Text style={{ color: Colors.textcolor, marginStart: 10 ,fontWeight:'bold'}}>Profession Name</Text>
-                <Text style={{ color: Colors.textcolor, marginStart: 10,padding:10,backgroundColor:Colors.grayview,marginTop:2 }}>{profile.profession_name}</Text>
-
-                <Text style={{ color: Colors.textcolor, marginStart: 10,marginTop:10,fontWeight:'bold' }}>Profession Description </Text>
-                    <Text style={{ color: Colors.textcolor, fontWeight: "300", padding: 10, marginTop: 2 }}>{profile.profession_description}</Text>
          
-         
-                <Text style={{ color: Colors.textcolor, marginStart: 10, marginTop: 10 ,fontWeight:'bold'}}>Profession Experience</Text>
-                    <Text style={{ color: Colors.textcolor, fontWeight: "300", padding: 10, marginTop: 2 }}>{profile.profession_experience}</Text>
-         
+           
+           
 
-                    <Text style={{ color: Colors.textcolor, marginStart: 10, marginTop: 10, fontWeight: 'bold' }}>Profession Photos</Text>
+         
+           
+              
 
-                    <FlatList
-                        data={profile.profession_photo}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={renderImageItem}
-                        horizontal
-                    />
-            </View>
+
+
+
          
 
 
-
-            <View style={{margin:15}}>
-                <Text style={{ color: Colors.black, alignSelf: 'center',marginTop:20 }}>Reviews and Ratings</Text>
-                <View style={{height:4,marginTop:10,backgroundColor:Colors.grayview}}></View>
-            </View>
 
 
             {loading && (
@@ -970,19 +999,17 @@ const EmployeeDetailsScreen = () => {
             <View>
 
                 <FlatList
-                    style={{height:"40%"}}
-                        scrollEnabled={false}
-                    data={rating}
-                    verticle
-                    showsVerticalScrollIndicator={false}
+                   
+                    data={cart}
+                  
+         
                     keyExtractor={(item) => item._id.toString()}
-                    renderItem={renderRecentSearch}
+                    renderItem={renderCart}
                 />
             </View>
 
 
-            </ScrollView>
-
+          
           
 
             <Modal visible={isDialogVisible} animationType="fade" transparent>
@@ -1223,8 +1250,8 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
-      
-        width:150
+        marginStart:40,
+        marginEnd:40
 
     },
  
@@ -1339,6 +1366,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         height: '12%', // Adjust the height of each item
     },
+    topbar: {
+        backgroundColor: Colors.blue,
+        height: 80,
+
+    },
 
     
  
@@ -1357,4 +1389,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default EmployeeDetailsScreen
+export default CartScreens
