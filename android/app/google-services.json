@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "7011689699",
+    "project_id": "nana-udyog",
+    "storage_bucket": "nana-udyog.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7011689699:android:bba71b8a7634b7921e91d6",
+        "android_client_info": {
+          "package_name": "com.nana_udyog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7011689699-pkaq8qp6n0ukj677ig6sis7r4ij3o59b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCglCU5o0HMNAA46iQC1m3LXXmVL0A_QCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7011689699-pkaq8qp6n0ukj677ig6sis7r4ij3o59b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7011689699:android:93d27c0b7a0e22f01e91d6",
+        "android_client_info": {
+          "package_name": "com.yourprojectname"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7011689699-pkaq8qp6n0ukj677ig6sis7r4ij3o59b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCglCU5o0HMNAA46iQC1m3LXXmVL0A_QCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7011689699-pkaq8qp6n0ukj677ig6sis7r4ij3o59b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
