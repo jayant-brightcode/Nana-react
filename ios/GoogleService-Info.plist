@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>537647498687-j32b8vfr8tjdiv0jkj7vcnf0nkk06abh.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.537647498687-j32b8vfr8tjdiv0jkj7vcnf0nkk06abh</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>537647498687-ka1dhk68o74p3hqgug95m96he054uuq0.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCaNmE3aKK0o8l9gIChKirVZLFWeC6qjnY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>537647498687</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nanaudyog</string>
+	<key>PROJECT_ID</key>
+	<string>nanamain-414df</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nanamain-414df.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:537647498687:ios:54a54ae74b3204d40ecd0a</string>
+	<key>DATABASE_URL</key>
+	<string>https://nanamain-414df-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

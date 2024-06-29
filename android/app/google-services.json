@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "537647498687",
+    "project_id": "nanamain-414df",
+    "storage_bucket": "nanamain-414df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537647498687:android:eeb1b1d4c601a5c10ecd0a",
+        "android_client_info": {
+          "package_name": "com.nanaudyog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "537647498687-ka1dhk68o74p3hqgug95m96he054uuq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nanaudyog",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "537647498687-1f3cmb9tl248r5n37a21j9tilhj1v8s1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACOv_-nQ4v2K7clsIychSAn7gilBnM70g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537647498687-1f3cmb9tl248r5n37a21j9tilhj1v8s1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

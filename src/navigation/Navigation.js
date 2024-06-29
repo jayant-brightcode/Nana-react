@@ -1,0 +1,153 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SplashScreen from '../Screens/SplashScreen';
+import SignupScreen from '../Screens/SignupScreen';
+import OtpScreen from '../Screens/OtpScreen';
+import AccountCreatedScreen from '../Screens/AccountCreatedScreen';
+import MemberIdHintScreen from '../Screens/MemberIdHintScreen';
+import ChooseLanguageScreen from '../Screens/ChooseLanguageScreen';
+import Toast from 'react-native-toast-message';
+import LoginScreen from '../Screens/LoginScreen';
+import RegistrationFormScreen from '../Screens/RegistrationFormScreen';
+import ChoosePlanScreen from '../Screens/ChoosePlanScreen';
+import PaymentScreen from '../Screens/PaymentScreen';
+import HomeScreen from '../Screens/HomeScreen';
+import OfferScreen from '../Screens/OfferScreen';
+import AllCategoryScreen from '../Screens/AllCategoryScreen';
+import JobsScreen from '../Screens/JobsScreen';
+import ProfileScreen from '../Screens/ProfileScreen';
+import WorkDetailScreen from '../Screens/WorkDetailsScreen';
+import ChooseSkillScreen from '../Screens/ChooseSkillScreen';
+import EmployeeDetailsScreen from '../Screens/EmployeeDetailsScreen';
+import JobRequestScreen from '../Screens/JobRequestScreen';
+import MonthlyWorkDetailScreen from '../Screens/MonthlyWorkDetailsScreen';
+import AttendanceScreen from '../Screens/AttendanceScreen';
+import ChooseEmployeeTypeScreen from '../Screens/ChooseEmployeeTypeScreen';
+import LeaveApplicationScreen from '../Screens/LeaveApplicationScreen';
+import MembershipHistoryScreen from '../Screens/MembershipHistoryScreen';
+import WorkHistoryScreen from '../Screens/WorkHistoryScreen';
+import ContractScreen from '../Screens/ContractScreen';
+import SettingScreen from '../Screens/SettingScreen';
+import MyPurchasedPromotionScreen from '../Screens/MyPurchasedPromotionScreen';
+import PurchasePromotionScreen from '../Screens/PurchasePromtionScreen';
+import ViewPromotionDetailScreen from '../Screens/ViewPromotionDetailScreen';
+import ChatRoomScreen from '../Screens/ChatRoomScreen';
+import ChatScreen from '../Screens/ChatScreen';
+import WorkDashboardScreen from '../Screens/WorkDashBoardScreen';
+import ForgotPasswordScreen from '../Screens/ForgotPasswordScreem';
+import ForgotPasswordOtpScreen from '../Screens/ForgotPasswordOtpScreen';
+import NewPasswordScreen from '../Screens/NewPasswordScreen';
+import CartScreen from '../Screens/CartScreen';
+import CartScreens from '../Screens/CartScreens';
+import NotificationScreen from '../Screens/NotificationScreen';
+import SearchScreen from '../Screens/SearchScreen';
+import PhotoViewerScreen from '../Screens/PhotoViewerScreen';
+import TermsScreen from '../Screens/Terms';
+import PolicyScreen from '../Screens/Policy';
+import HelpScreen from '../Screens/Help';
+import AboutScreen from '../Screens/AboutScreen';
+import RecentActivity from '../Screens/RecentActivityScreen';
+import RecentActivityScreen from '../Screens/RecentActivityScreen';
+import TempJob from '../Screens/TempJob';
+import AllAttendanceScreen from '../Screens/AllAttendanceScreen';
+import NavigationService from './NavigationService';
+import CancellationPolicyScreen from '../Screens/CancellationPolicy';
+import ClassScreen from '../Screens/ClassScreen';
+import SendOtpForResetPhoneScreen from '../Screens/SendOtpForResetPhoneScreeen';
+import ResetPhoneNumberOtpScreen from '../Screens/ResetPhoneNumberOtpScreen';
+import SendOtpForResetEmailScreen from '../Screens/SendOtpForResetEmailScreen';
+import ResetEmailOtpScreen from '../Screens/ResetEmailOtpScreen';
+
+const Stack = createNativeStackNavigator();
+
+
+const AppNavigator = () => {
+  return (
+    <NavigationContainer ref={(navigatorRef) => { NavigationService.setTopLevelNavigator(navigatorRef); }}>
+            
+
+      <Stack.Navigator initialRouteName="SplashScreen"  screenOptions={{
+          headerShown: false, // Hide the top bar by default
+        }}>
+        <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        <Stack.Screen name="SignupScreen" component={SignupScreen} />
+        <Stack.Screen name="OtpScreen" component={OtpScreen} />
+        <Stack.Screen name="AccountCreatedScreen" component={AccountCreatedScreen} />
+        <Stack.Screen name="MemberIdHintScreen" component={MemberIdHintScreen} />
+        <Stack.Screen name="ChooseLanguageScreen" component={ChooseLanguageScreen} />
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="RegistrationFormScreen" component={RegistrationFormScreen} />
+        <Stack.Screen name="ChooseSkillScreen" component={ChooseSkillScreen} />
+
+        <Stack.Screen name="ChoosePlanScreen" component={ChoosePlanScreen} />
+        <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+
+        <Stack.Screen name="OfferScreen" component={OfferScreen} />
+        <Stack.Screen name="AllCategoryScreen" component={AllCategoryScreen} />
+        <Stack.Screen name="JobsScreen" component={JobsScreen} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="WorkDetailScreen" component={WorkDetailScreen} />
+        <Stack.Screen name="EmployeeDetailScreen" component={EmployeeDetailsScreen} />
+        <Stack.Screen name="JobRequestScreen" component={JobRequestScreen} />
+        <Stack.Screen name="TempJobScreen" component={TempJob} />
+
+
+        <Stack.Screen name="MonthlyWorkDetailScreen" component={MonthlyWorkDetailScreen} />
+        <Stack.Screen name="AttendaceScreen" component={AttendanceScreen} />
+        <Stack.Screen name="AllAttendaceScreen" component={AllAttendanceScreen} />
+
+        <Stack.Screen name="ChooseEmployeeTypeScreen" component={ChooseEmployeeTypeScreen} />
+        <Stack.Screen name="LeaveApplicationScreen" component={LeaveApplicationScreen} />
+        <Stack.Screen name="MembershipHistoryScreen" component={MembershipHistoryScreen} />
+        <Stack.Screen name="WorkHistoryScreen" component={WorkHistoryScreen} />
+
+        <Stack.Screen name="ContractScreen" component={ContractScreen} />
+        <Stack.Screen name="SettingScreen" component={SettingScreen} />
+        <Stack.Screen name="MyPurchasedPromotionScreen" component={MyPurchasedPromotionScreen} />
+        <Stack.Screen name="PurchasePromotionScreen" component={PurchasePromotionScreen} />
+        <Stack.Screen name="ViewPromotionDetailScreen" component={ViewPromotionDetailScreen} />
+        <Stack.Screen name="ChatRoomScreen" component={ChatRoomScreen} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
+
+        <Stack.Screen name="WorkDashboardScreen" component={WorkDashboardScreen} />
+        <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
+        <Stack.Screen name="ForgotPasswordOtpScreen" component={ForgotPasswordOtpScreen} />
+        <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} />
+        <Stack.Screen name="CartScreens" component={CartScreens} />
+        <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
+        <Stack.Screen name="SearchScreen" component={SearchScreen} />
+
+        <Stack.Screen name="PhotoViewerScreen" component={PhotoViewerScreen} />
+        <Stack.Screen name="TermsScreen" component={TermsScreen} />
+        <Stack.Screen name="PolicyScreen" component={PolicyScreen} />
+        <Stack.Screen name="HelpScreen" component={HelpScreen} />
+        <Stack.Screen name="AboutScreen" component={AboutScreen} />
+        <Stack.Screen name="RecentActivityScreen" component={RecentActivityScreen} />
+
+        <Stack.Screen name="CancellationScreen" component={CancellationPolicyScreen} />
+
+        <Stack.Screen name="SendOtpForResetPhoneScreen" component={SendOtpForResetPhoneScreen} />
+        <Stack.Screen name="ResetPhoneNumberOtpScreen" component={ResetPhoneNumberOtpScreen} />
+
+
+        <Stack.Screen name="SendOtpForResetEmailScreen" component={SendOtpForResetEmailScreen} />
+        <Stack.Screen name="ResetEmailOtpScreen" component={ResetEmailOtpScreen} />
+
+
+        <Stack.Screen name="ClassScreen" component={ClassScreen} />
+
+
+
+
+
+
+
+      </Stack.Navigator>
+      <Toast />
+    </NavigationContainer>
+  );
+};
+
+export default AppNavigator;
